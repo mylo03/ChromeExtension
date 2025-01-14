@@ -1,15 +1,20 @@
 {
-    "name": "Journey To Hire Extension",
-    "version": "1.0.2",
+    "name": "URL Logger",
+    "version": "1.0.3",
+    "description": "Logs the date and URL of visited pages",
     "manifest_version": 3,
-    "permissions": [
-      "tabs"
-    ],
+    "author": "Mylo Farman",
     "action": {
-      "default_popup": "index.html"
+        "default_popup": "index.html",
+        "default_title": "Journey To Hire"
     },
+    "icons": {
+        "128": "icon.png"
+    }, 
+
     "host_permissions": [
-      "http://*/*",
-      "https://*/*"
+        "http://*/*",
+        "https://*/*"
     ]
-  }
+
+}
