@@ -108,8 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     
             // Append URL, date, and remove button to the list item
-            listItem.appendChild(urlPart);
             listItem.appendChild(datePart);
+            listItem.appendChild(urlPart);
             listItem.appendChild(removeButton);
     
             logList.insertBefore(listItem, logList.firstChild); // Insert at the top
