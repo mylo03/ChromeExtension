@@ -1,4 +1,9 @@
+import * as pdfjsLib from './libs/pdf.mjs'; 
+import { initializeCVUploadHandlers } from './Scripts/cvUploadHandler.js';
+
 document.addEventListener('DOMContentLoaded', () => {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = chrome.runtime.getURL('./libs/pdf.worker.mjs');
+
     const logList = document.getElementById('log-list');
     const bookmarkList = document.getElementById('bookmark-list'); // This needs to exist in the HTML
     const logButton = document.getElementById('log-button'); 
@@ -474,8 +479,37 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById(target).classList.add('active');
         });
     });
+
+
+    initializeCVUploadHandlers();
+
+
+
+    document.getElementById('trigger-celebration').addEventListener('click', () => {
+        const selectedEffect = document.getElementById('celebration-type').value;
     
-
-
+        switch (selectedEffect) {
+            case 'confetti':
+                confetti(); // Trigger confetti effect
+                break;
+            case 'fireworks':
+                launchFireworks(); // Placeholder for fireworks function
+                break;
+            case 'balloons':
+                launchBalloons(); // Placeholder for balloons function
+                break;
+            default:
+                alert('Please select a celebration type!');
+        }
+    });
+    
+    // Fireworks effect (example implementation)
+    function launchFireworks() {
+        party.sparkles(document.body, {
+            count: 50,
+            colors: ["#FF0000", "#00FF00", "#0000FF"],
+          });
+    }
+    
 
 });

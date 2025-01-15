@@ -81,3 +81,6 @@ ul {
     padding: 10px;
 }
 
+.center-content {
+    text-align: center; /* Center text and elements inside this container */
+}

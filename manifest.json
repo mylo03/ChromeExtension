@@ -4,7 +4,7 @@
     "description": "Logs the date and URL of visited pages",
     "manifest_version": 3,
     "author": "Mylo Farman",
-    
+
     "action": {
         "default_popup": "index.html",
         "default_title": "Journey To Hire"
@@ -12,18 +12,19 @@
 
     "icons": {
         "128": "icon.png"
-    }, 
+    },
 
     "content_security_policy": {
-        "extension_pages": {
-          "script-src": "'self';",
-          "object-src": "'self'"
-        }
+        "script-src": "'self'",
+        "object-src": "'none'"
     },
 
     "host_permissions": [
         "http://*/*",
         "https://*/*"
-    ]
+    ],
 
+    "permissions": [
+        "storage"
+    ]
 }

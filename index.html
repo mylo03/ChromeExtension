@@ -10,10 +10,13 @@
     <link rel="stylesheet" href="Styles/buttons.css">
     <link rel="stylesheet" href="Styles/darkmode.css">
     <link rel="stylesheet" href="Styles/tabs.css">
+    <link rel="stylesheet" href="Styles/CV.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="libs/confetti.browser.min.js"></script>
-    <script src="CVScript.js"></script>
+    <script type = "module" src="libs/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/party-js"></script>
+
+</head>
 </head>
 <body>
     <!-- Header Section -->
@@ -30,6 +33,17 @@
             </nav>
             <input type="checkbox" id="darkmode-toggle"/>
             <label for="darkmode-toggle"></label>
+
+
+            <div>
+                <select id="celebration-type">
+                    <option value="confetti">🎉 Confetti</option>
+                    <option value="fireworks">🎆 Fireworks</option>
+                </select>
+            </div>
+            <button id="trigger-celebration">Celebrate!</button>
+
+
         </div>
 
 
@@ -52,15 +66,21 @@
             <ul id="bookmark-list" class="droppable"></ul>
         </div>
 
-        <!-- "Hello" Tab Content -->
+        <!-- CV Tab Content -->
         <div id="hello-content" class="tab-content">
-            <h2>Upload Your CV</h2>
-            <input type="file" id="cvFile" accept=".pdf">
-            <button onclick="uploadCV()">Upload CV</button>
-            <div id="keywordResults"></div>
+            <div class="center-content">
+                <h3>Drag & Drop Your CV Below:</h3>
+                <div id="drop-area" class="drop-area">
+                    <div id="file-info" class="file-info"></div> <!-- Image will go here -->
+                </div>
+                <input type="file" id="cvFile" style="display:none;" />
+                <h3>Tags</h3>
+                <div id="keyword-results"></div>
+            </div>
         </div>
 
-        <div id="statistics-content" class="tab-content">
+        
+        <div id="stats-content" class="tab-content">
             <h2>Stats</h2>
         </div>
 
@@ -70,6 +90,6 @@
 
     </div>
 
-    <script src="script.js"></script> <!-- Link to the external JavaScript -->
+    <script type = "module" src="script.js"></script> <!-- Link to the external JavaScript -->
 </body>
 </html>
