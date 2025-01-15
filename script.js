@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             fetchFavicon(url).then(faviconUrl => {
                 const listItem = document.createElement('li');
+                listItem.dataset.url = url;
                 listItem.classList.add('log-item');
 
                 const urlPart = document.createElement('a');
@@ -18,9 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 urlPart.href = url;
                 urlPart.textContent = shortenUrl(url);
                 urlPart.target = '_blank';
-                urlPart.addEventListener('click', (e) => {
-                    window.open(url, '_blank');
-                });
 
                 const faviconPart = document.createElement('img');
                 faviconPart.classList.add('favicon-box');
@@ -48,6 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('logs', JSON.stringify(storedLogs));
 
                 loadLogs();
+                makeDraggable(listItem); // Ensure newly added item is draggable
             });
         });
     }
@@ -58,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             fetchFavicon(url).then(faviconUrl => {
                 const listItem = document.createElement('li');
+                listItem.dataset.url = url;
                 listItem.classList.add('log-item');
 
                 const urlPart = document.createElement('a');
@@ -65,9 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 urlPart.href = url;
                 urlPart.textContent = shortenUrl(url);
                 urlPart.target = '_blank';
-                urlPart.addEventListener('click', (e) => {
-                    window.open(url, '_blank');
-                });
 
                 const faviconPart = document.createElement('img');
                 faviconPart.classList.add('favicon-box');
@@ -88,9 +85,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 listItem.appendChild(faviconPart);
                 listItem.appendChild(removeButton);
 
-                // Ensure bookmarkList is defined before modifying it
                 if (bookmarkList) {
                     bookmarkList.insertBefore(listItem, bookmarkList.firstChild); // Add to the top
+                    makeDraggable(listItem); // Ensure newly added item is draggable
                 } else {
                     console.error("bookmarkList element is not found.");
                 }
@@ -158,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const storedLogs = JSON.parse(localStorage.getItem('logs')) || [];
         storedLogs.forEach((logEntry) => {
             const listItem = document.createElement('li');
+            listItem.dataset.url = logEntry.url;
             listItem.classList.add('log-item');
 
             const urlPart = document.createElement('a');
@@ -165,10 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
             urlPart.href = logEntry.url;
             urlPart.textContent = shortenUrl(logEntry.url);
             urlPart.target = '_blank';
-            urlPart.addEventListener('click', (e) => {
-                e.preventDefault();
-                window.open(logEntry.url, '_blank');
-            });
 
             const faviconPart = document.createElement('img');
             faviconPart.classList.add('favicon-box');
@@ -190,16 +184,18 @@ document.addEventListener('DOMContentLoaded', () => {
             listItem.appendChild(removeButton);
 
             logList.insertBefore(listItem, logList.firstChild);
+            makeDraggable(listItem); // Ensure loaded items are draggable
         });
     }
 
     function loadBookmarks() {
-        if (bookmarkList) {  // Check if bookmarkList is defined
+        if (bookmarkList) {
             bookmarkList.innerHTML = '';
 
             const storedBookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
             storedBookmarks.forEach((bookmarkEntry) => {
                 const listItem = document.createElement('li');
+                listItem.dataset.url = bookmarkEntry.url;
                 listItem.classList.add('log-item');
 
                 const urlPart = document.createElement('a');
@@ -207,10 +203,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 urlPart.href = bookmarkEntry.url;
                 urlPart.textContent = shortenUrl(bookmarkEntry.url);
                 urlPart.target = '_blank';
-                urlPart.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    window.open(bookmarkEntry.url, '_blank');
-                });
 
                 const faviconPart = document.createElement('img');
                 faviconPart.classList.add('favicon-box');
@@ -232,6 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 listItem.appendChild(removeButton);
 
                 bookmarkList.insertBefore(listItem, bookmarkList.firstChild);
+                makeDraggable(listItem); // Ensure loaded items are draggable
             });
         } else {
             console.error("bookmarkList element is not found.");
@@ -250,7 +243,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return url.length > 30 ? url.substring(0, 30) + '...' : url;
     }
 
-
     // Function to trigger the confetti
     function triggerConfetti() {
         confetti({
@@ -262,5 +254,101 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Allow items to be draggable
+    function makeDraggable(item) {
+        item.draggable = true;
+        item.addEventListener('dragstart', handleDragStart);
+    }
+
+    // Handle the start of a drag
+    function handleDragStart(e) {
+        e.dataTransfer.setData('text/plain', e.target.dataset.url); // Store the URL of the dragged item
+        e.dataTransfer.setData('source', e.target.parentNode.id);  // Store the source list's ID
+        e.target.classList.add('dragging');
+    }
+
+    // Allow dropping by preventing default
+    function handleDragOver(e) {
+        e.preventDefault();
+    }
+
+    // Handle the drop event
+    function handleDrop(e) {
+        e.preventDefault();
+        const url = e.dataTransfer.getData('text/plain');
+        const source = e.dataTransfer.getData('source');
+        const targetList = e.target.closest('ul');
+    
+        if (targetList && targetList.id !== source) {
+            // Find and remove the dragged item from the source list
+            const sourceList = document.getElementById(source);
+            const draggedItem = [...sourceList.children].find(
+                (child) => child.dataset.url === url
+            );
+            if (draggedItem) {
+                sourceList.removeChild(draggedItem);
+    
+                // Add the item to the target list
+                targetList.appendChild(draggedItem);
+    
+                // Reapply draggable properties and event listeners
+                makeDraggable(draggedItem);
+    
+                // Add other necessary event listeners
+                const removeButton = draggedItem.querySelector('.remove-btn');
+                if (removeButton) {
+                    removeButton.addEventListener('click', (ev) => {
+                        ev.stopPropagation();
+                        const listId = targetList.id;
+                        const localStorageKey = mapListIdToLocalStorageKey(listId);
+                        removeLogOrBookmark(draggedItem, localStorageKey);
+                    });
+                }
+    
+                updateLocalStorage(mapListIdToLocalStorageKey(source), url, mapListIdToLocalStorageKey(targetList.id));
+    
+                // Trigger confetti if moved from bookmarkList to logList
+                if (source === 'bookmark-list' && targetList.id === 'log-list') {
+                    triggerConfetti();
+                }
+            }
+        }
+    }
+
+    function mapListIdToLocalStorageKey(listId) {
+        if (listId === 'log-list') return 'logs';
+        if (listId === 'bookmark-list') return 'bookmarks';
+        return null;
+    }
+
+    // Update localStorage when an item is moved
+    function updateLocalStorage(source, url, target) {
+        const sourceData = JSON.parse(localStorage.getItem(source)) || [];
+        const targetData = JSON.parse(localStorage.getItem(target)) || [];
+
+        // Remove the URL from the source list
+        const updatedSource = sourceData.filter((entry) => entry.url !== url);
+        localStorage.setItem(source, JSON.stringify(updatedSource));
+
+        // Add the URL to the target list
+        const movedItem = sourceData.find((entry) => entry.url === url);
+        if (movedItem) {
+            targetData.push(movedItem);
+            localStorage.setItem(target, JSON.stringify(targetData));
+        }
+    }
+
+
+    // Make all existing items draggable
+    document.querySelectorAll('.log-item').forEach(makeDraggable);
+
+    // Add event listeners for drag-and-drop on both lists
+    logList.addEventListener('dragover', handleDragOver);
+    logList.addEventListener('drop', handleDrop);
+
+    bookmarkList.addEventListener('dragover', handleDragOver);
+    bookmarkList.addEventListener('drop', handleDrop);
+
 
 });
