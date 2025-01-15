@@ -1,15 +1,24 @@
 /* dark-mode.css */
 
 /* Apply smooth transition for background and color changes */
-body, .container, .log-item {
+body, .container, .header-container, .log-item {
     transition: background-color 0.5s ease, color 0.5s ease, box-shadow 0.3s ease;
 }
 
 /* When dark mode is enabled, adjust the styles */
 
+body.dark-mode {
+    background-color: #24243a; /* Dark background */
+    color:#ebebeb;
+}
+
+.header-container.dark-mode {
+    background-color: #24243a;
+}
+
 
 .container.dark-mode {
-    background-color: #1d1c27; /* Dark background */
+    background-color: #43435e; /* Dark background */
     color: white; /* Light text */
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); /* Darker shadow for better contrast */
 }
@@ -40,22 +49,20 @@ body, .container, .log-item {
 
 /* Keep the dark mode button color light grey */
 body.dark-mode #dark-mode-toggle {
-    color: #d3d3d3; /* Light grey color when dark mode is active */
+    color: #000000; /* Light grey color when dark mode is active */
 }
 
 
-
-
 label {
-    width:40px;
+    width: 40px;
     height: 20px;
     position: relative;
     display: block;
-    background: #ebebeb;
+    background: #ffffff;
     cursor: pointer;
-    box-shadow: inset 0px 2px 5px rgba(0,0,0,0.4), inset 0px -2px 3px rgba(255, 255, 255, 0.4);
     border-radius: 10px;
     transition: 0.4s;
+    border: 1px solid transparent; /* Default transparent border */
 }
 
 label:after {
@@ -67,11 +74,11 @@ label:after {
     left: 2px;
     background: linear-gradient(180deg, #ffcc89, #d8870b);
     border-radius: 18px;
-    box-shadow: 0px 5px 10px rgba(0,0,0);
+    box-shadow: 0px 1px 1px rgba(0, 0, 0);
     transition: width 0.3s ease;
 }
 
-input{
+input {
     width: 0;
     height: 0;
     visibility: hidden;
@@ -79,6 +86,7 @@ input{
 
 input:checked + label {
     background: #242424;
+    border-color: #ffffff; /* White border when active */
 }
 
 input:checked + label:after {
@@ -86,7 +94,6 @@ input:checked + label:after {
     transform: translateX(-100%);
     background: linear-gradient(180deg, #ffffff, #747474);
 }
-
 
 label:active:after {
     width: 20px;

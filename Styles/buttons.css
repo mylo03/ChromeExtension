@@ -7,15 +7,15 @@
 }
 
 #log-button {
-    padding: 10px 15px;
     font-size: 18px;
     cursor: pointer;
     background-color: #4caaaf;
     color: white;
     border: none;
     border-radius: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     transition: background-color 0.3s ease;
-    margin-right: 10px;
 }
 
 #log-button:hover {
@@ -23,15 +23,15 @@
 }
 
 #bookmark-button {
-    padding: 10px 15px;
     font-size: 18px;
     cursor: pointer;
     background-color: #4caaaf;
     color: white;
     border: none;
     border-radius: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     transition: background-color 0.3s ease;
-    margin-right: 10px;
 }
 
 #bookmark-button:hover {

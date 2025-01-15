@@ -53,3 +53,15 @@
 .remove-btn:hover {
     color: #7b7b7b; /* Change color to red on hover */
 }
+
+
+
+#log-list {
+    max-height: 130px; /* or any height that suits your design */
+    margin-bottom: 30px;
+}
+
+
+#bookmark-list {
+    max-height: 130px; /* or any height that suits your design */
+}

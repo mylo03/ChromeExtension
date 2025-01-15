@@ -9,34 +9,65 @@
     <link rel="stylesheet" href="Styles/logitems.css">
     <link rel="stylesheet" href="Styles/buttons.css">
     <link rel="stylesheet" href="Styles/darkmode.css">
+    <link rel="stylesheet" href="Styles/tabs.css">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="libs/confetti.browser.min.js"></script>
+    <script src="CVScript.js"></script>
 </head>
 <body>
     <!-- Header Section -->
     <header>
         <div class="header-container">
             <h2>Journey To Hire</h2>
+            <nav>
+                <ul>
+                    <li><button id="applied-tab" data-target="applied-content" class="active">APPLICATIONS</button></li>
+                    <li><button id="hello-tab" data-target="hello-content">CV</button></li>
+                    <li><button id="stats-tab" data-target="stats-content">STATS</button></li>
+                    <li><button id="support-tab" data-target="support-content">SUPPORT</button></li>
+                </ul>
+            </nav>
             <input type="checkbox" id="darkmode-toggle"/>
             <label for="darkmode-toggle"></label>
         </div>
+
+
     </header>
 
     <!-- Main Content Section -->
     <div class="container">
-        <div class="grid-for-two">
-            <div class="left-column"><h3>Applied</h3></div>
-            <div class="right-column"><button id="log-button">+</button></div>
-        </div>
-        <ul id="log-list" class="droppable"></ul>
+        <!-- Existing "Applied" content -->
+        <div id="applied-content" class="tab-content">
+            <div class="grid-for-two">
+                <div class="left-column"><h3>Applied</h3></div>
+                <div class="right-column"><button id="log-button">+</button></div>
+            </div>
+            <ul id="log-list" class="droppable"></ul>
 
-        <!-- Section for bookmarked logs -->
-        <div class="grid-for-two">
-            <div class="left-column"><h3>To Apply</h3></div>
-            <div class="right-column"><button id="bookmark-button">+</i></button></div>
+            <div class="grid-for-two">
+                <div class="left-column"><h3>To Apply</h3></div>
+                <div class="right-column"><button id="bookmark-button">+</button></div>
+            </div>
+            <ul id="bookmark-list" class="droppable"></ul>
         </div>
-        <ul id="bookmark-list" class="droppable"></ul>
+
+        <!-- "Hello" Tab Content -->
+        <div id="hello-content" class="tab-content">
+            <h2>Upload Your CV</h2>
+            <input type="file" id="cvFile" accept=".pdf">
+            <button onclick="uploadCV()">Upload CV</button>
+            <div id="keywordResults"></div>
+        </div>
+
+        <div id="statistics-content" class="tab-content">
+            <h2>Stats</h2>
+        </div>
+
+        <div id="support-content" class="tab-content">
+            <h2>Notes</h2>
+        </div>
+
     </div>
 
     <script src="script.js"></script> <!-- Link to the external JavaScript -->

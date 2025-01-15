@@ -1,0 +1,75 @@
+/* Style for the nav list */
+nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: block;
+    width: 100%;
+    border-radius: 0; /* Remove rounded corners */
+    border: none;
+}
+
+/* Style for the list items (tabs) */
+nav li {
+    margin-bottom: 10px;
+}
+
+/* Style for the tabs to make them look like clickable buttons */
+nav button {
+    padding: 15px 33px;
+    cursor: pointer;
+    font-size: 10px;
+    background-color: rgb(240, 240, 240); /* Light grey background */
+    color: rgb(186, 186, 186); /* Dark grey font color */
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: start;
+    align-items: start;
+    transition: background-color 0.3s ease;
+    border: none;
+    border-radius: none;
+    font-weight: bold;
+    position: relative; /* To position the vertical line */
+    box-shadow: none;
+}
+
+/* Add vertical line to the left of the active tab */
+nav button::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 5px; /* Adjust width of the vertical line */
+    background-color: rgb(193, 122, 16); /* Color of the line */
+    visibility: hidden; /* Initially hidden */
+}
+
+/* Show the vertical line on the active tab */
+nav button.active::before {
+    visibility: visible;
+}
+
+/* Optional: Style the active tab */
+nav button.active {
+    background-color: #ffffff;
+    color: rgb(193, 122, 16);
+    border: none;
+    font-weight: bold;
+    border-radius: none;
+}
+
+/* Styling for the content sections */
+.container {
+    margin-top: 0;
+}
+
+/* Style for the tab content sections */
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}

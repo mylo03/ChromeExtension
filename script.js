@@ -145,6 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
         await new Promise(resolve => setTimeout(resolve, 1));
         updateLogItemsDarkMode();
     });
+
+
     
     bookmarkButton.addEventListener('click', async () => {
         bookmarkUrlAndFavicon();
@@ -364,7 +366,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-
     // Make all existing items draggable
     document.querySelectorAll('.log-item').forEach(makeDraggable);
 
@@ -375,6 +376,8 @@ document.addEventListener('DOMContentLoaded', () => {
     bookmarkList.addEventListener('dragover', handleDragOver);
     bookmarkList.addEventListener('drop', handleDrop);
 
+
+    /* DARK MODE */
 
     // Function to update dark mode for all log items
     function updateLogItemsDarkMode() {
@@ -393,6 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('dark-mode');
         document.getElementById('darkmode-toggle').checked = true;  // Set the checkbox to checked
         document.querySelector('.container').classList.add('dark-mode');
+        document.querySelector('.header-container').classList.add('dark-mode');
     } else {
         document.getElementById('darkmode-toggle').checked = false;  // Set the checkbox to unchecked
     }
@@ -404,6 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('darkmode-toggle').addEventListener('change', function () {
         document.body.classList.toggle('dark-mode');
         document.querySelector('.container').classList.toggle('dark-mode');
+        document.querySelector('.header-container').classList.toggle('dark-mode');
         
         // Update dark mode for all log items
         updateLogItemsDarkMode();
@@ -413,6 +418,62 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('dark-mode', isDarkMode);
     });
 
+
+
+
+    // Get the tabs and sections
+    // Get the buttons and content sections
+    const appliedTab = document.getElementById("applied-tab");
+    const helloTab = document.getElementById("hello-tab");
+    const appliedContent = document.getElementById("applied-content");
+    const helloContent = document.getElementById("hello-content");
+
+    // Add event listeners to each tab button
+    appliedTab.addEventListener('click', () => {
+        showTab('applied');
+    });
+
+    helloTab.addEventListener('click', () => {
+        showTab('hello');
+    });
+
+    // Function to toggle between the tabs
+    function showTab(tab) {
+        if (tab === 'applied') {
+            appliedContent.classList.add('active');
+            helloContent.classList.remove('active');
+        } else if (tab === 'hello') {
+            helloContent.classList.add('active');
+            appliedContent.classList.remove('active');
+        }
+    }
+
+
+
+    /* Navigation Button */
+    const firstTab = document.getElementById('applied-tab');
+    if (firstTab) {
+        firstTab.click();
+    }
+
+
+
+    document.querySelectorAll('nav button').forEach(button => {
+        button.addEventListener('click', function () {
+            // Remove the 'active' class from all buttons
+            document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+            
+            // Add the 'active' class to the clicked button
+            this.classList.add('active');
+            
+            // Show the corresponding tab content
+            const target = this.getAttribute('data-target');
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(target).classList.add('active');
+        });
+    });
     
 
 

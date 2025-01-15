@@ -18,24 +18,23 @@ body {
     height: 400px;
     background-color: #fff;
     border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    overflow: hidden
 }
 
 
 .header-container {
     width: 100px;
     height: 400px;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background-color: rgb(240, 240, 240);
     padding: 20px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    align-items: center;
 }
 
 
@@ -58,9 +57,16 @@ body {
 h2 {
     font-size: 1.2rem;
     margin-top: 0px;
-    margin-bottom: 0px;
+    margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
+}
+
+
+h3 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding: 0px;
 }
 
 ul {
@@ -74,3 +80,4 @@ ul {
     margin-bottom: 10px;
     padding: 10px;
 }
+
