@@ -1,117 +1,158 @@
 document.addEventListener('DOMContentLoaded', () => {
     const logList = document.getElementById('log-list');
-    const logButton = document.getElementById('log-button'); // Ensure the plus button is linked here
+    const bookmarkList = document.getElementById('bookmark-list'); // This needs to exist in the HTML
+    const logButton = document.getElementById('log-button'); 
+    const bookmarkButton = document.getElementById('bookmark-button');
 
     // Function to log the current tab's URL and favicon
     function logUrlAndFavicon() {
-        // Get the active tab's URL using the Chrome API
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            const url = tabs[0].url; // Get the URL of the active tab
+            const url = tabs[0].url; 
 
-            // Fetch favicon from the webpage
             fetchFavicon(url).then(faviconUrl => {
-                // Create the log entry and append to the list
                 const listItem = document.createElement('li');
                 listItem.classList.add('log-item');
 
-                // URL part
                 const urlPart = document.createElement('a');
                 urlPart.classList.add('short-url');
                 urlPart.href = url;
-                urlPart.textContent = shortenUrl(url); // Ensure you have this function to shorten URL
-                urlPart.target = '_blank';  // Open in a new tab when clicked
+                urlPart.textContent = shortenUrl(url);
+                urlPart.target = '_blank';
                 urlPart.addEventListener('click', (e) => {
-                    // Open URL in a new tab
                     window.open(url, '_blank');
                 });
 
-                // Favicon part
                 const faviconPart = document.createElement('img');
                 faviconPart.classList.add('favicon-box');
-                faviconPart.src = faviconUrl; // Set the favicon image
-                faviconPart.style.width = '50px'; // Set the width to 50px
-                faviconPart.style.height = '50px'; // Set the height to 50px
-                faviconPart.style.objectFit = 'cover'; // Ensure the image fits inside the box
+                faviconPart.src = faviconUrl;
+                faviconPart.style.width = '50px';
+                faviconPart.style.height = '50px';
+                faviconPart.style.objectFit = 'cover';
 
-                // Remove button (X icon)
                 const removeButton = document.createElement('span');
                 removeButton.classList.add('remove-btn');
                 removeButton.textContent = 'X';
                 removeButton.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent the URL from opening when X is clicked
+                    e.stopPropagation();
                     removeLog(listItem, url);
                 });
 
-                // Append URL, favicon, and remove button to the list item
                 listItem.appendChild(urlPart);
                 listItem.appendChild(faviconPart);
                 listItem.appendChild(removeButton);
 
-                logList.insertBefore(listItem, logList.firstChild); // Add to the top
+                logList.insertBefore(listItem, logList.firstChild);
 
-                // Save the log entry in localStorage
                 const storedLogs = JSON.parse(localStorage.getItem('logs')) || [];
                 storedLogs.push({ url, faviconUrl });
                 localStorage.setItem('logs', JSON.stringify(storedLogs));
 
-                // Reload the logs after saving
                 loadLogs();
             });
         });
     }
 
-    // Function to fetch the favicon URL from the tab's URL
+    function bookmarkUrlAndFavicon() {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            const url = tabs[0].url;
+
+            fetchFavicon(url).then(faviconUrl => {
+                const listItem = document.createElement('li');
+                listItem.classList.add('log-item');
+
+                const urlPart = document.createElement('a');
+                urlPart.classList.add('short-url');
+                urlPart.href = url;
+                urlPart.textContent = shortenUrl(url);
+                urlPart.target = '_blank';
+                urlPart.addEventListener('click', (e) => {
+                    window.open(url, '_blank');
+                });
+
+                const faviconPart = document.createElement('img');
+                faviconPart.classList.add('favicon-box');
+                faviconPart.src = faviconUrl;
+                faviconPart.style.width = '50px';
+                faviconPart.style.height = '50px';
+                faviconPart.style.objectFit = 'cover';
+
+                const removeButton = document.createElement('span');
+                removeButton.classList.add('remove-btn');
+                removeButton.textContent = 'X';
+                removeButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    removeLog(listItem, url);
+                });
+
+                listItem.appendChild(urlPart);
+                listItem.appendChild(faviconPart);
+                listItem.appendChild(removeButton);
+
+                // Ensure bookmarkList is defined before modifying it
+                if (bookmarkList) {
+                    bookmarkList.insertBefore(listItem, bookmarkList.firstChild); // Add to the top
+                } else {
+                    console.error("bookmarkList element is not found.");
+                }
+
+                const storedBookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+                storedBookmarks.push({ url, faviconUrl });
+                localStorage.setItem('bookmarks', JSON.stringify(storedBookmarks));
+
+                loadBookmarks();
+            });
+        });
+    }
+
     function fetchFavicon(url) {
         return new Promise((resolve, reject) => {
             const parser = document.createElement('a');
             parser.href = url;
 
-            // Try using the standard favicon path
             const faviconUrl = `${parser.protocol}//${parser.host}/favicon.ico`;
 
-            // Test if the favicon exists by creating an image element and checking its load status
             const img = new Image();
-            img.onload = () => resolve(faviconUrl); // If the image loads successfully, resolve the URL
-            img.onerror = () => resolve(getFallbackFavicon(url)); // Fallback to first letter if error
-            img.src = faviconUrl; // Set the favicon image source
+            img.onload = () => resolve(faviconUrl);
+            img.onerror = () => resolve(getFallbackFavicon(url));
+            img.src = faviconUrl;
         });
     }
 
-    // Function to generate a fallback favicon (first letter of the URL)
     function getFallbackFavicon(url) {
         const firstLetter = new URL(url).hostname.charAt(0).toUpperCase();
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = 50;
         canvas.height = 50;
-        ctx.fillStyle = '#ccc'; // Set a background color for fallback
+        ctx.fillStyle = '#ccc';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = '#000'; // Set text color
-        ctx.font = '30px Arial'; // Set font size and type
-        ctx.fillText(firstLetter, 15, 35); // Draw the first letter in the center
-        return canvas.toDataURL(); // Return the image as a data URL
+        ctx.fillStyle = '#000';
+        ctx.font = '30px Arial';
+        ctx.fillText(firstLetter, 15, 35);
+        return canvas.toDataURL();
     }
 
-    // Function to remove log from the list and localStorage
     function removeLog(listItem, url) {
-        // Remove from DOM
         logList.removeChild(listItem);
 
-        // Remove from localStorage
         const storedLogs = JSON.parse(localStorage.getItem('logs')) || [];
         const updatedLogs = storedLogs.filter(logEntry => logEntry.url !== url);
         localStorage.setItem('logs', JSON.stringify(updatedLogs));
     }
 
-    // Handle the plus button click to log URL and favicon
-    logButton.addEventListener('click', logUrlAndFavicon);
+    logButton.addEventListener('click', () => {
+        logUrlAndFavicon();
+        triggerConfetti(); // Trigger confetti when the log button is clicked
+    });
+    
+    bookmarkButton.addEventListener('click', () => {
+        bookmarkUrlAndFavicon();
+    });
 
-    // Load logs on page load
     loadLogs();
+    loadBookmarks();
 
-    // Function to load logs from localStorage and display them
     function loadLogs() {
-        // Clear existing list before adding new logs
         logList.innerHTML = '';
 
         const storedLogs = JSON.parse(localStorage.getItem('logs')) || [];
@@ -119,7 +160,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const listItem = document.createElement('li');
             listItem.classList.add('log-item');
 
-            // URL part
             const urlPart = document.createElement('a');
             urlPart.classList.add('short-url');
             urlPart.href = logEntry.url;
@@ -130,34 +170,97 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.open(logEntry.url, '_blank');
             });
 
-            // Favicon part
             const faviconPart = document.createElement('img');
             faviconPart.classList.add('favicon-box');
-            faviconPart.src = logEntry.faviconUrl; // Set the favicon image
-            faviconPart.style.width = '20px'; // Ensure it's 50x50
-            faviconPart.style.height = '20px'; // Ensure it's 50x50
-            faviconPart.style.objectFit = 'cover'; // Fit the image inside the box
+            faviconPart.src = logEntry.faviconUrl;
+            faviconPart.style.width = '20px';
+            faviconPart.style.height = '20px';
+            faviconPart.style.objectFit = 'cover';
 
-            // Remove button (X icon)
             const removeButton = document.createElement('span');
             removeButton.classList.add('remove-btn');
             removeButton.textContent = 'X';
             removeButton.addEventListener('click', (e) => {
-                e.stopPropagation(); // Prevent the URL from opening when X is clicked
+                e.stopPropagation();
                 removeLog(listItem, logEntry.url);
             });
 
-            // Append URL, favicon, and remove button to the list item
             listItem.appendChild(faviconPart);
             listItem.appendChild(urlPart);
             listItem.appendChild(removeButton);
 
-            logList.insertBefore(listItem, logList.firstChild); // Insert at the top
+            logList.insertBefore(listItem, logList.firstChild);
         });
     }
 
-    // Function to shorten the URL for display purposes
+    function loadBookmarks() {
+        if (bookmarkList) {  // Check if bookmarkList is defined
+            bookmarkList.innerHTML = '';
+
+            const storedBookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+            storedBookmarks.forEach((bookmarkEntry) => {
+                const listItem = document.createElement('li');
+                listItem.classList.add('log-item');
+
+                const urlPart = document.createElement('a');
+                urlPart.classList.add('short-url');
+                urlPart.href = bookmarkEntry.url;
+                urlPart.textContent = shortenUrl(bookmarkEntry.url);
+                urlPart.target = '_blank';
+                urlPart.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.open(bookmarkEntry.url, '_blank');
+                });
+
+                const faviconPart = document.createElement('img');
+                faviconPart.classList.add('favicon-box');
+                faviconPart.src = bookmarkEntry.faviconUrl;
+                faviconPart.style.width = '20px';
+                faviconPart.style.height = '20px';
+                faviconPart.style.objectFit = 'cover';
+
+                const removeButton = document.createElement('span');
+                removeButton.classList.add('remove-btn');
+                removeButton.textContent = 'X';
+                removeButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    removeBookmark(listItem, bookmarkEntry.url);
+                });
+
+                listItem.appendChild(faviconPart);
+                listItem.appendChild(urlPart);
+                listItem.appendChild(removeButton);
+
+                bookmarkList.insertBefore(listItem, bookmarkList.firstChild);
+            });
+        } else {
+            console.error("bookmarkList element is not found.");
+        }
+    }
+
+    function removeBookmark(listItem, url) {
+        bookmarkList.removeChild(listItem);
+
+        const storedBookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+        const updatedBookmarks = storedBookmarks.filter(bookmarkEntry => bookmarkEntry.url !== url);
+        localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
+    }
+
     function shortenUrl(url) {
         return url.length > 30 ? url.substring(0, 30) + '...' : url;
     }
+
+
+    // Function to trigger the confetti
+    function triggerConfetti() {
+        confetti({
+            particleCount: 100, // Number of confetti particles
+            spread: 70, // Spread angle
+            origin: {
+                x: 0.5, // Center the confetti
+                y: 0.5
+            }
+        });
+    }
+
 });
