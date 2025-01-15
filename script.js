@@ -292,21 +292,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Add the item to the target list
                 targetList.appendChild(draggedItem);
     
-                // Reapply draggable properties and event listeners
+                // Reapply draggable properties
                 makeDraggable(draggedItem);
     
-                // Add other necessary event listeners
-                const removeButton = draggedItem.querySelector('.remove-btn');
-                if (removeButton) {
-                    removeButton.addEventListener('click', (ev) => {
-                        ev.stopPropagation();
-                        const listId = targetList.id;
-                        const localStorageKey = mapListIdToLocalStorageKey(listId);
-                        removeLogOrBookmark(draggedItem, localStorageKey);
-                    });
-                }
+                // Reapply event listeners
+                reattachEventListeners(draggedItem, targetList.id);
     
-                updateLocalStorage(mapListIdToLocalStorageKey(source), url, mapListIdToLocalStorageKey(targetList.id));
+                // Update local storage
+                updateLocalStorage(
+                    mapListIdToLocalStorageKey(source),
+                    url,
+                    mapListIdToLocalStorageKey(targetList.id)
+                );
     
                 // Trigger confetti if moved from bookmarkList to logList
                 if (source === 'bookmark-list' && targetList.id === 'log-list') {
@@ -314,6 +311,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
+    }
+
+    function reattachEventListeners(item, targetListId) {
+        const removeButton = item.querySelector('.remove-btn');
+        if (removeButton) {
+            const localStorageKey = mapListIdToLocalStorageKey(targetListId);
+            removeButton.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                removeLogOrBookmark(item, localStorageKey);
+            });
+        }
+    }
+
+    function removeLogOrBookmark(item, localStorageKey) {
+        const list = item.parentNode;
+        list.removeChild(item);
+    
+        const storedItems = JSON.parse(localStorage.getItem(localStorageKey)) || [];
+        const updatedItems = storedItems.filter(
+            (entry) => entry.url !== item.dataset.url
+        );
+        localStorage.setItem(localStorageKey, JSON.stringify(updatedItems));
     }
 
     function mapListIdToLocalStorageKey(listId) {
@@ -349,6 +368,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
     bookmarkList.addEventListener('dragover', handleDragOver);
     bookmarkList.addEventListener('drop', handleDrop);
+
+
+
+
+
+    // TABS
+
+    const tabLinks = document.querySelectorAll('.tab-link');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            const targetTab = document.getElementById(link.dataset.tab);
+
+            // Remove active class from all tabs
+            tabLinks.forEach(tab => tab.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // Add active class to the clicked tab and the associated content
+            link.classList.add('active');
+            targetTab.classList.add('active');
+        });
+    });
 
 
 });
