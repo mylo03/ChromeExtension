@@ -393,4 +393,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
+    // Check if dark mode is saved in localStorage
+    if (localStorage.getItem('dark-mode') === 'true') {
+        document.body.classList.add('dark-mode');
+        document.querySelector('.container').classList.add('dark-mode');
+        document.getElementById('dark-mode-toggle').innerHTML = '<i class="fas fa-moon"></i>'; // Moon icon when dark mode is active
+    } else {
+        document.getElementById('dark-mode-toggle').innerHTML = '<i class="fas fa-sun"></i>'; // Sun icon in normal mode
+    }
+    
+    // Toggle dark mode and change button icon
+    document.getElementById('dark-mode-toggle').addEventListener('click', function () {
+        document.body.classList.toggle('dark-mode');
+        document.querySelector('.container').classList.toggle('dark-mode');
+    
+        // Toggle button icon between sun and moon
+        if (document.body.classList.contains('dark-mode')) {
+        document.getElementById('dark-mode-toggle').innerHTML = '<i class="fas fa-moon"></i>'; // Moon icon in dark mode
+        } else {
+        document.getElementById('dark-mode-toggle').innerHTML = '<i class="fas fa-sun"></i>'; // Sun icon in normal mode
+        }
+    
+        // Save the dark mode preference in localStorage
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        localStorage.setItem('dark-mode', isDarkMode);
+    });
+
 });

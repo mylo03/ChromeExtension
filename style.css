@@ -171,5 +171,42 @@ ul {
 
 
 
+/* DARK MODE */
+/* Apply smooth transition for background and color changes */
+/* Apply smooth transition for background and color changes */
+body, .container, .log-item {
+    transition: background-color 0.5s ease, color 0.5s ease, box-shadow 0.3s ease;
+}
 
+/* When dark mode is enabled, adjust the styles */
+body.dark-mode {
+    background-color: #121212;
+    color: white;
+}
 
+.container.dark-mode {
+    background-color: #121212; /* Dark background */
+    color: white; /* Light text */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); /* Darker shadow for better contrast */
+}
+
+/* For log items */
+.log-item.dark-mode {
+    background-color: #1e1e1e;
+    color: white;
+}
+
+/* Dark mode button transition */
+#dark-mode-toggle {
+    background-color: transparent; /* Remove background */
+    border: none; /* Remove border */
+    font-size: 1.5rem; /* Icon size */
+    cursor: pointer; /* Make it clickable */
+    color: inherit; /* Inherit text color */
+    transition: color 0.3s ease; /* Smooth color transition */
+}
+
+/* Keep the dark mode button color light grey */
+body.dark-mode #dark-mode-toggle {
+    color: #d3d3d3; /* Light grey color when dark mode is active */
+}
