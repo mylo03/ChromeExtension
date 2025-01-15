@@ -137,13 +137,19 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('logs', JSON.stringify(updatedLogs));
     }
 
-    logButton.addEventListener('click', () => {
+    logButton.addEventListener('click', async () => {
         logUrlAndFavicon();
         triggerConfetti(); // Trigger confetti when the log button is clicked
+    
+        // Wait for the next event loop cycle to ensure other operations are completed
+        await new Promise(resolve => setTimeout(resolve, 1));
+        updateLogItemsDarkMode();
     });
     
-    bookmarkButton.addEventListener('click', () => {
+    bookmarkButton.addEventListener('click', async () => {
         bookmarkUrlAndFavicon();
+        await new Promise(resolve => setTimeout(resolve, 1));
+        updateLogItemsDarkMode();
     });
 
     loadLogs();
@@ -370,53 +376,45 @@ document.addEventListener('DOMContentLoaded', () => {
     bookmarkList.addEventListener('drop', handleDrop);
 
 
-
-
-
-    // TABS
-
-    const tabLinks = document.querySelectorAll('.tab-link');
-    const tabContents = document.querySelectorAll('.tab-content');
-
-    tabLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            const targetTab = document.getElementById(link.dataset.tab);
-
-            // Remove active class from all tabs
-            tabLinks.forEach(tab => tab.classList.remove('active'));
-            tabContents.forEach(content => content.classList.remove('active'));
-
-            // Add active class to the clicked tab and the associated content
-            link.classList.add('active');
-            targetTab.classList.add('active');
+    // Function to update dark mode for all log items
+    function updateLogItemsDarkMode() {
+        const isDarkMode = document.body.classList.contains('dark-mode');
+        document.querySelectorAll('.log-item').forEach(item => {
+            if (isDarkMode) {
+                item.classList.add('dark-mode');
+            } else {
+                item.classList.remove('dark-mode');
+            }
         });
-    });
-
+    }
 
     // Check if dark mode is saved in localStorage
     if (localStorage.getItem('dark-mode') === 'true') {
         document.body.classList.add('dark-mode');
+        document.getElementById('darkmode-toggle').checked = true;  // Set the checkbox to checked
         document.querySelector('.container').classList.add('dark-mode');
-        document.getElementById('dark-mode-toggle').innerHTML = '<i class="fas fa-moon"></i>'; // Moon icon when dark mode is active
     } else {
-        document.getElementById('dark-mode-toggle').innerHTML = '<i class="fas fa-sun"></i>'; // Sun icon in normal mode
+        document.getElementById('darkmode-toggle').checked = false;  // Set the checkbox to unchecked
     }
-    
-    // Toggle dark mode and change button icon
-    document.getElementById('dark-mode-toggle').addEventListener('click', function () {
+
+    // Apply dark mode to existing log items when the page loads
+    updateLogItemsDarkMode();
+
+    // Toggle dark mode when the checkbox is clicked
+    document.getElementById('darkmode-toggle').addEventListener('change', function () {
         document.body.classList.toggle('dark-mode');
         document.querySelector('.container').classList.toggle('dark-mode');
-    
-        // Toggle button icon between sun and moon
-        if (document.body.classList.contains('dark-mode')) {
-        document.getElementById('dark-mode-toggle').innerHTML = '<i class="fas fa-moon"></i>'; // Moon icon in dark mode
-        } else {
-        document.getElementById('dark-mode-toggle').innerHTML = '<i class="fas fa-sun"></i>'; // Sun icon in normal mode
-        }
-    
+        
+        // Update dark mode for all log items
+        updateLogItemsDarkMode();
+
         // Save the dark mode preference in localStorage
         const isDarkMode = document.body.classList.contains('dark-mode');
         localStorage.setItem('dark-mode', isDarkMode);
     });
+
+    
+
+
 
 });
