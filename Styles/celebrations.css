@@ -1,29 +1,44 @@
-.balloon {
-    position: fixed;
-    bottom: -100px;
-    width: 50px;
-    height: 80px;
-    background-color: red;
-    border-radius: 50%;
-    animation: floatUp 5s linear infinite;
+/* Style the select element */
+#celebration-type {
+    font-family: 'Arial', sans-serif; /* Make it look modern */
+    font-size: 16px; /* Increase font size for readability */
+    padding: 10px 10px; /* Add padding to make it larger and more clickable */
+    background-color: #f0f0f0; /* Light gray background */
+    border: 2px solid #ccc; /* Soft border */
+    border-radius: 8px; /* Rounded corners */
+    color: #333; /* Dark text color */
+    cursor: pointer; /* Change cursor to pointer */
+    transition: all 0.3s ease; /* Smooth transition on hover/focus */
 }
 
-.balloon::before {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 2px;
-    height: 50px;
-    background-color: #000;
+/* Hover effect */
+#celebration-type:hover {
+    background-color: #e0e0e0; /* Slightly darker background on hover */
+    border-color: #999; /* Darken the border on hover */
 }
 
-@keyframes floatUp {
-    from {
-        transform: translateY(100%);
-    }
-    to {
-        transform: translateY(-200%);
-    }
+/* Focus effect */
+#celebration-type:focus {
+    border-color: #4d90fe; /* Blue border on focus */
+    outline: none; /* Remove default focus outline */
+}
+
+/* Style the option elements */
+#celebration-type option {
+    padding: 10px; /* Add padding for a better look */
+}
+
+/* Add custom emojis or icons */
+#celebration-type option[value="confetti"] {
+    background-image: url('confetti-icon.png'); /* Use your custom confetti icon */
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+    padding-left: 30px; /* Add padding to make room for the icon */
+}
+
+#celebration-type option[value="rocket"] {
+    background-image: url('rocket-icon.png'); /* Use your custom rocket icon */
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+    padding-left: 30px; /* Add padding to make room for the icon */
 }

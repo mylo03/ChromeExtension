@@ -256,17 +256,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return url.length > 30 ? url.substring(0, 30) + '...' : url;
     }
 
-    // Function to trigger the confetti
-    function triggerConfetti() {
-        confetti({
-            particleCount: 100, // Number of confetti particles
-            spread: 70, // Spread angle
-            origin: {
-                x: 0.5, // Center the confetti
-                y: 0.5
-            }
-        });
-    }
 
     // Allow items to be draggable
     function makeDraggable(item) {
@@ -484,10 +473,24 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCVUploadHandlers();
 
 
+    let rocket = null; // Declare the rocket globally to retain reference
+    showRocket()
 
-    document.getElementById('trigger-celebration').addEventListener('click', () => {
+
+    const savedCelebration = localStorage.getItem('celebration-type');
+    if (savedCelebration) {
+        document.getElementById('celebration-type').value = savedCelebration;
+    }
+    document.getElementById('celebration-type').addEventListener('change', function() {
+        const selectedCelebration = this.value;
+        localStorage.setItem('celebration-type', selectedCelebration);
+    });
+
+
+    // Function to trigger the confetti
+    function triggerConfetti() {
         const selectedEffect = document.getElementById('celebration-type').value;
-    
+
         switch (selectedEffect) {
             case 'confetti':
                 confetti(); // Trigger confetti effect
@@ -495,21 +498,49 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'fireworks':
                 launchFireworks(); // Placeholder for fireworks function
                 break;
-            case 'balloons':
-                launchBalloons(); // Placeholder for balloons function
+            case 'rocket':
+                triggerRocketBlastOff(); // Trigger the rocket blast-off if it exists
                 break;
+    
             default:
                 alert('Please select a celebration type!');
         }
-    });
-    
-    // Fireworks effect (example implementation)
-    function launchFireworks() {
-        party.sparkles(document.body, {
-            count: 50,
-            colors: ["#FF0000", "#00FF00", "#0000FF"],
-          });
     }
+
+
+
+
+function showRocket() {
+    rocket = document.createElement('img');
+    rocket.src = './assets/Rocket-Emoji.png'; // Path to your image
+    rocket.alt = 'Rocket'; // Alt text for accessibility
+    rocket.style.position = 'absolute';
+    rocket.style.width = '40px'; // Adjust the width of the rocket image
+    rocket.style.height = '40px'; // Adjust the height of the rocket image
     
+    // Define the origin (starting position) at the bottom of the screen
+    rocket.style.left = `${window.innerWidth / 2 - 20}px`; // Horizontally centered
+    rocket.style.bottom = '-5px'; // Position it at the very bottom of the screen
+    
+    // Set the rocket to move vertically without rotation change
+    document.body.appendChild(rocket);
+}
+
+// Trigger the rocket blast-off
+function triggerRocketBlastOff() {
+    if (rocket) {
+        // Animate the rocket to blast off (move vertically upwards)
+        rocket.style.transition = 'transform 5s cubic-bezier(0.42, 0, 1, 1), opacity 5s ease-in-out'; // Start slow and accelerate
+        rocket.style.transform = 'translateY(-180vh)'; // Combine the rotation with the upward translation
+        rocket.style.opacity = '0.5'; // Make it fade out
+
+        // After the rocket has moved off-screen, return it to the original position
+        setTimeout(() => {
+            rocket.style.transition = 'transform 5s ease-in-out, opacity 5s ease-in-out'; // Transition back
+            rocket.style.transform = 'translateY(0)'; // Return to initial position (bottom of the screen) with the same rotation
+            rocket.style.opacity = '1'; // Fade back in
+        }, 6000); // After the rocket has been off-screen for a few seconds
+    }
+}
 
 });

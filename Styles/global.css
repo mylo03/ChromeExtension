@@ -43,6 +43,7 @@ body {
     display: flex;
     justify-content: space-between;
     width: 100%;
+    align-items: center; /* Vertically center the content */
 }
 
 .left-column {

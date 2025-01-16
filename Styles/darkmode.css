@@ -17,6 +17,11 @@ body.dark-mode {
 }
 
 
+
+
+
+
+
 .container.dark-mode {
     background-color: #43435e; /* Dark background */
     color: white; /* Light text */
@@ -63,6 +68,7 @@ label {
     border-radius: 10px;
     transition: 0.4s;
     border: 1px solid transparent; /* Default transparent border */
+    margin-bottom: 20px;
 }
 
 label:after {
