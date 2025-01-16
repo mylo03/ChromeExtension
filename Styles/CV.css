@@ -40,9 +40,23 @@
 
 
 #keyword-results {
-    max-height: 50px;      /* Set a max height */
-    overflow-y: auto;       /* Enable scrolling if the content overflows */
-    padding: 10px;          /* Add padding for better readability */
-    margin-top: 10px;       /* Optional: Adjust margin for spacing */
-    border: 1px solid #ccc; /* Optional: Add a border for better visibility */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Space between tags */
+}
+
+.keyword-tag {
+    display: inline-block;
+    margin: 5px;
+    padding: 8px 12px;
+    background-color: rgb(159, 211, 171);
+    color: black;
+    border-radius: 25px;  /* Makes the tags rounded */
+    font-size: 12px;
+    font-family: Arial, sans-serif;
+}
+
+.keyword-tag::before {
+    content: "💻";  /* Adds the coding emoji before each tag */
+    margin-right: 8px;  /* Adds space between the emoji and the text */
 }

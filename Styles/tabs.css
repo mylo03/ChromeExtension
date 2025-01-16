@@ -19,8 +19,8 @@ nav button {
     padding: 15px 33px;
     cursor: pointer;
     font-size: 10px;
-    background-color: rgb(240, 240, 240); /* Light grey background */
-    color: rgb(186, 186, 186); /* Dark grey font color */
+    background-color: rgb(165, 199, 255);
+    color: rgb(125, 125, 125); /* Dark grey font color */
     width: 100%;
     box-sizing: border-box;
     display: flex;
@@ -72,4 +72,10 @@ nav button.active {
 
 .tab-content.active {
     display: block;
+}
+
+
+#hello-content {
+    max-height: 400px; /* Adjust this height as needed */
+    overflow-y: auto; /* Enable vertical scrolling when content exceeds max height */
 }

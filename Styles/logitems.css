@@ -29,19 +29,6 @@
     object-fit: cover;
 }
 
-/* URL box */
-.url-box {
-    background-color: #f1f1f1;
-    padding: 5px 10px;
-    border-radius: 20px;
-    word-wrap: break-word;
-    text-decoration: none;
-    color: black;
-    font-size: 0.9rem;
-    white-space: nowrap; /* Prevent the URL from breaking into multiple lines */
-    overflow: hidden;
-    text-overflow: ellipsis; /* Add ellipsis if the URL is too long */
-}
 
 /* The remove button */
 .remove-btn {

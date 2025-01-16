@@ -22,14 +22,16 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    overflow: hidden
+    overflow: hidden;
+    z-index: 2;
+    position: relative;
 }
 
 
 .header-container {
     width: 100px;
     height: 400px;
-    background-color: rgb(240, 240, 240);
+    background-color: rgb(165, 199, 255);
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -85,3 +87,17 @@ ul {
 .center-content {
     text-align: center; /* Center text and elements inside this container */
 }
+
+
+#users-image {
+    transition: transform 0.3s ease; /* Smooth transition for scaling */
+    cursor: pointer;
+    width: 100%;
+    margin-top: 190px;
+}
+
+#users-image:hover {
+    transform: scale(1.1); /* Slightly scale up the image on hover */
+}
+
+

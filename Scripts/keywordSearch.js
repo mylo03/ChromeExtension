@@ -1,6 +1,7 @@
+import { keywords } from '../assets/keywords.js';
+
 export function searchKeywordsInText(textContent) {
     const foundKeywords = [];
-    const keywords = ["Python", "JavaScript", "React", "HTML", "CSS", "Node.js"];
 
     keywords.forEach((keyword) => {
         const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
@@ -14,9 +15,8 @@ export function searchKeywordsInText(textContent) {
 
     if (foundKeywords.length > 0) {
         foundKeywords.forEach((keyword) => {
-            keywordResults.innerHTML += `<li>${keyword}</li>`;
+            keywordResults.innerHTML += `<span class="keyword-tag">${keyword}</span>`;
         });
-        keywordResults.innerHTML += `</ul>`;
     } else {
         keywordResults.innerHTML = `<h3>No Keywords Found</h3>`;
     }

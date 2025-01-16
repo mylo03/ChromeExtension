@@ -18,14 +18,9 @@ body.dark-mode {
 
 
 
-
-
-
-
 .container.dark-mode {
     background-color: #43435e; /* Dark background */
     color: white; /* Light text */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); /* Darker shadow for better contrast */
 }
 
 /* For log items */
@@ -36,9 +31,6 @@ body.dark-mode {
 .log-item.dark-mode:hover {
     background-color: #f7c7f9;
 }
-
-
-
 
 
 
@@ -95,12 +87,35 @@ input:checked + label {
     border-color: #ffffff; /* White border when active */
 }
 
+
 input:checked + label:after {
     left: 38px;
     transform: translateX(-100%);
     background: linear-gradient(180deg, #ffffff, #747474);
 }
 
+
+
 label:active:after {
     width: 20px;
+}
+
+
+
+body.dark-mode nav button {
+    background-color: #24243a; /* Dark background */
+    color: #ebebeb; /* Light text color */
+    border: none;
+}
+
+body.dark-mode nav button.active {
+    background-color: #43435e;
+    color: rgb(216, 133, 239);
+}
+
+
+
+body.dark-mode nav button::before {
+    background-color: rgb(216, 133, 239); /* Color of the line */
+
 }

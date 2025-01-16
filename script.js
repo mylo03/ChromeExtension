@@ -263,6 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
         item.addEventListener('dragstart', handleDragStart);
     }
 
+
     // Handle the start of a drag
     function handleDragStart(e) {
         e.dataTransfer.setData('text/plain', e.target.dataset.url); // Store the URL of the dragged item
@@ -473,14 +474,22 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCVUploadHandlers();
 
 
+
+
+
+
+
+    /* CELEBRATIONS */
+
+
     let rocket = null; // Declare the rocket globally to retain reference
     showRocket()
-
 
     const savedCelebration = localStorage.getItem('celebration-type');
     if (savedCelebration) {
         document.getElementById('celebration-type').value = savedCelebration;
     }
+    
     document.getElementById('celebration-type').addEventListener('change', function() {
         const selectedCelebration = this.value;
         localStorage.setItem('celebration-type', selectedCelebration);
@@ -508,39 +517,66 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
+    function showRocket() {
+        // Create the planet element (a circle with a gradient to make it look like a planet)
+        const planet = document.createElement('div');
+        planet.style.position = 'absolute';
+        planet.style.left = `${window.innerWidth / 2 - 80}px`; // Horizontally centered
+        planet.style.bottom = '-80px'; // Positioned at the very bottom of the screen
+        planet.style.width = '300px'; // Size of the planet
+        planet.style.height = '100px'; // Size of the planet
+        planet.style.borderRadius = '50%'; // Makes it a circle
+        planet.style.background = 'radial-gradient(circle,rgb(241, 162, 117),rgb(221, 138, 29))'; // Gradient for a planet-like effect
+        planet.style.boxShadow = '0 0 20px rgba(0, 0, 0, 0.5)'; // Adds a shadow for depth
+        planet.style.zIndex = '1'; // Ensures the planet stays behind the rocket
 
+        // Append planet to the body
+        document.body.appendChild(planet);
 
-function showRocket() {
-    rocket = document.createElement('img');
-    rocket.src = './assets/Rocket-Emoji.png'; // Path to your image
-    rocket.alt = 'Rocket'; // Alt text for accessibility
-    rocket.style.position = 'absolute';
-    rocket.style.width = '40px'; // Adjust the width of the rocket image
-    rocket.style.height = '40px'; // Adjust the height of the rocket image
-    
-    // Define the origin (starting position) at the bottom of the screen
-    rocket.style.left = `${window.innerWidth / 2 - 20}px`; // Horizontally centered
-    rocket.style.bottom = '-5px'; // Position it at the very bottom of the screen
-    
-    // Set the rocket to move vertically without rotation change
-    document.body.appendChild(rocket);
-}
+        // Create the rocket element
+        rocket = document.createElement('img');
+        rocket.src = './assets/Rocket-Emoji2.png'; // Initial rocket image
+        rocket.alt = 'Rocket'; // Alt text for accessibility
+        rocket.style.position = 'absolute';
+        rocket.style.width = '40px'; // Adjust the width of the rocket image
+        rocket.style.height = '40px'; // Adjust the height of the rocket image
+        rocket.style.left = `${window.innerWidth / 2 - 15}px`; // Horizontally centered
+        rocket.style.bottom = '0px'; // Position it just above the planet (adjust if necessary)
+        rocket.style.zIndex = '2'; // Ensure the rocket is above the planet
 
-// Trigger the rocket blast-off
-function triggerRocketBlastOff() {
-    if (rocket) {
-        // Animate the rocket to blast off (move vertically upwards)
-        rocket.style.transition = 'transform 5s cubic-bezier(0.42, 0, 1, 1), opacity 5s ease-in-out'; // Start slow and accelerate
-        rocket.style.transform = 'translateY(-180vh)'; // Combine the rotation with the upward translation
-        rocket.style.opacity = '0.5'; // Make it fade out
-
-        // After the rocket has moved off-screen, return it to the original position
-        setTimeout(() => {
-            rocket.style.transition = 'transform 5s ease-in-out, opacity 5s ease-in-out'; // Transition back
-            rocket.style.transform = 'translateY(0)'; // Return to initial position (bottom of the screen) with the same rotation
-            rocket.style.opacity = '1'; // Fade back in
-        }, 6000); // After the rocket has been off-screen for a few seconds
+        // Append rocket to the body
+        document.body.appendChild(rocket);
     }
-}
+
+    // Trigger the rocket blast-off
+    function triggerRocketBlastOff() {
+        if (rocket) {
+            // Change the rocket image to the second image (Rocket-Emoji.png) during the blast-off
+            rocket.src = './assets/Rocket-Emoji.png'; // Change to the second rocket image
+
+            // Animate the rocket to blast off (move vertically upwards)
+            rocket.style.transition = 'transform 5s cubic-bezier(0.42, 0, 1, 1)'; // Transition only for the transform property
+            rocket.style.transform = 'translateY(-160vh)'; // Combine the rotation with the upward translation
+
+            // After the rocket has moved off-screen, return it to the original position
+            setTimeout(() => {
+                rocket.style.transition = 'transform 5s ease-in-out'; // Transition back for the transform property only
+                rocket.style.transform = 'translateY(0)'; // Return to initial position (bottom of the screen)
+            }, 6000); // After the rocket has been off-screen for 6 seconds
+
+            // Listen for when the rocket's transition ends (after landing)
+            rocket.addEventListener('transitionend', function onTransitionEnd(event) {
+                // Only change back to Rocket-Emoji.png when the rocket has finished landing
+                if (event.propertyName === 'transform') { // Ensure it's the "transform" transition that completed
+                    rocket.src = './assets/Rocket-Emoji2.png'; // Change back to the original rocket image
+                    rocket.removeEventListener('transitionend', onTransitionEnd); // Clean up the event listener
+                }
+            });
+        }
+    }
+
+
+
+
 
 });
