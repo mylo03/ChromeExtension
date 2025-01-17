@@ -1,54 +1,66 @@
-/* log-item.css */
+/* Container styling for horizontal layout with wrapping */
+#log-list,
+#bookmark-list {
+    display: flex; /* Use flexbox for horizontal layout */
+    flex-wrap: wrap; /* Allow items to wrap to the next line */
+    gap: 10px; /* Add space between items */
+    padding: 10px; /* Add some padding inside the container */
+    max-height: 130px; /* Optional: control height if scrolling is needed */
+    overflow-y: auto; /* Allow vertical scrolling if content overflows */
+    border: none; /* Optional: border for the container */
+    border-radius: 8px; /* Optional: rounded corners */
+}
 
-/* Log item styling */
+/* Style for each item */
 .log-item {
-    display: grid;
-    grid-template-columns: 2fr 20fr 1fr; /* 1/5th for favicon, 3/5th for URL, 1/5th for remove button */
-    align-items: center;
-    margin-bottom: 10px;
+    position: relative; /* Ensure the remove button is positioned relative to the item */
     padding: 10px;
-    justify-items: start; /* Align items to the left */
-    gap: 10px; /* Add some gap between columns */
-    border: 1px solid #ddd; /* Add border around each log item */
-    border-radius: 5px; /* Optional: rounding the corners */
-    cursor: pointer; /* Make it look clickable */
-    transition: background-color 0.3s ease; /* Smooth background transition */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: white;
+    width: 25px; /* Set a consistent width for items */
+    height: 25px; /* Set a consistent height for items */
+    display: flex; /* Center the favicon inside the item */
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Optional: subtle shadow */
+    transition: transform 0.2s ease; /* Smooth hover effect */
+}
+
+/* Style for the remove button */
+.remove-btn {
+    position: absolute; /* Position relative to the log item */
+    top: -10px;
+    right: 30px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(128, 127, 127);
+    color: rgb(0, 0, 0);
+    border-radius: 50%; /* Circular background */
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+    display: none; /* Hidden by default */
+}
+
+/* Show the remove button only when hovering over the log item */
+.log-item:hover .remove-btn {
+    display: flex; /* Make it visible on hover */
 }
 
 /* Hover effect for log items */
 .log-item:hover {
     background-color: #f1f1f1;
-    transform: scale(1.02);
-    transition: transform 0.2s ease;
+    transform: scale(1.04);
 }
 
 /* Favicon box */
 .favicon-box {
-    width: 30px;  /* Set width for the favicon */
+    width: 30px; /* Set width for the favicon */
     height: 30px;
     object-fit: cover;
-}
-
-
-/* The remove button */
-.remove-btn {
-    cursor: pointer;
-    font-size: 10px;
-    color: #cac9c9;
-}
-
-.remove-btn:hover {
-    color: #7b7b7b; /* Change color to red on hover */
-}
-
-
-
-#log-list {
-    max-height: 130px; /* or any height that suits your design */
-    margin-bottom: 30px;
-}
-
-
-#bookmark-list {
-    max-height: 130px; /* or any height that suits your design */
 }

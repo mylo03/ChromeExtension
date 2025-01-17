@@ -1,7 +1,7 @@
 /* dark-mode.css */
 
 /* Apply smooth transition for background and color changes */
-body, .container, .header-container, .log-item {
+body, .container, .header-container {
     transition: background-color 0.5s ease, color 0.5s ease, box-shadow 0.3s ease;
 }
 
@@ -23,14 +23,7 @@ body.dark-mode {
     color: white; /* Light text */
 }
 
-/* For log items */
-.log-item.dark-mode {
-    background-color: #cb99dc;
-}
 
-.log-item.dark-mode:hover {
-    background-color: #f7c7f9;
-}
 
 
 

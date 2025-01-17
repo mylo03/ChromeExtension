@@ -56,7 +56,23 @@
     font-family: Arial, sans-serif;
 }
 
-.keyword-tag::before {
+.coding-keyword::before {
     content: "💻";  /* Adds the coding emoji before each tag */
+    margin-right: 8px;  /* Adds space between the emoji and the text */
+}
+
+.coding-keyword {
+    background-color: #f1c40f; /* Yellow for coding keywords */
+    color: #2c3e50; /* Dark text */
+}
+
+
+
+.general-keyword {
+    background-color: #61c6b2; /* Teal for general keywords */
+}
+
+.general-keyword::before {
+    content: "🌍";  /* Adds the coding emoji before each tag */
     margin-right: 8px;  /* Adds space between the emoji and the text */
 }

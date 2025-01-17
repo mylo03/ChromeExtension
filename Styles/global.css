@@ -93,7 +93,7 @@ ul {
     transition: transform 0.3s ease; /* Smooth transition for scaling */
     cursor: pointer;
     width: 100%;
-    margin-top: 190px;
+    margin-top: 120px;
 }
 
 #users-image:hover {
@@ -101,3 +101,61 @@ ul {
 }
 
 
+
+
+
+
+/* Overlay Styles */
+.overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent dark background */
+    z-index: 1000;
+}
+
+/* Details Container as a Post-it Note */
+.details-container {
+    max-width: 200px;
+    height: 250px;
+    text-align: center;
+    background-color: #fffa7d !important;; /* Yellow background */
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    animation: fadeIn 0.3s ease-in-out;
+    position: relative;
+}
+
+/* Link Styles within the Details Container */
+.details-container a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.details-container a:hover {
+    text-decoration: underline;
+}
+
+/* Keyframe Animation for Fade In */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -55%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* Change the body background color when the overlay is active */
+.overlay-active body {
+    background-color: black; /* Change body background to black */
+    color: white; /* Change text color to white */
+}

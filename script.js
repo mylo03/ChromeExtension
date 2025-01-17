@@ -5,372 +5,302 @@ document.addEventListener('DOMContentLoaded', () => {
     pdfjsLib.GlobalWorkerOptions.workerSrc = chrome.runtime.getURL('./libs/pdf.worker.mjs');
 
     const logList = document.getElementById('log-list');
-    const bookmarkList = document.getElementById('bookmark-list'); // This needs to exist in the HTML
-    const logButton = document.getElementById('log-button'); 
+    const bookmarkList = document.getElementById('bookmark-list');
+    const logButton = document.getElementById('log-button');
     const bookmarkButton = document.getElementById('bookmark-button');
 
-    // Function to log the current tab's URL and favicon
-    function logUrlAndFavicon() {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            const url = tabs[0].url; 
-
-            fetchFavicon(url).then(faviconUrl => {
-                const listItem = document.createElement('li');
-                listItem.dataset.url = url;
-                listItem.classList.add('log-item');
-
-                const urlPart = document.createElement('a');
-                urlPart.classList.add('short-url');
-                urlPart.href = url;
-                urlPart.textContent = shortenUrl(url);
-                urlPart.target = '_blank';
-
-                const faviconPart = document.createElement('img');
-                faviconPart.classList.add('favicon-box');
-                faviconPart.src = faviconUrl;
-                faviconPart.style.width = '50px';
-                faviconPart.style.height = '50px';
-                faviconPart.style.objectFit = 'cover';
-
-                const removeButton = document.createElement('span');
-                removeButton.classList.add('remove-btn');
-                removeButton.textContent = 'X';
-                removeButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    removeLog(listItem, url);
-                });
-
-                listItem.appendChild(urlPart);
-                listItem.appendChild(faviconPart);
-                listItem.appendChild(removeButton);
-
-                logList.insertBefore(listItem, logList.firstChild);
-
-                const storedLogs = JSON.parse(localStorage.getItem('logs')) || [];
-                storedLogs.push({ url, faviconUrl });
-                localStorage.setItem('logs', JSON.stringify(storedLogs));
-
-                loadLogs();
-                makeDraggable(listItem); // Ensure newly added item is draggable
-            });
-        });
-    }
-
-    function bookmarkUrlAndFavicon() {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            const url = tabs[0].url;
-
-            fetchFavicon(url).then(faviconUrl => {
-                const listItem = document.createElement('li');
-                listItem.dataset.url = url;
-                listItem.classList.add('log-item');
-
-                const urlPart = document.createElement('a');
-                urlPart.classList.add('short-url');
-                urlPart.href = url;
-                urlPart.textContent = shortenUrl(url);
-                urlPart.target = '_blank';
-
-                const faviconPart = document.createElement('img');
-                faviconPart.classList.add('favicon-box');
-                faviconPart.src = faviconUrl;
-                faviconPart.style.width = '50px';
-                faviconPart.style.height = '50px';
-                faviconPart.style.objectFit = 'cover';
-
-                const removeButton = document.createElement('span');
-                removeButton.classList.add('remove-btn');
-                removeButton.textContent = 'X';
-                removeButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    removeLog(listItem, url);
-                });
-
-                listItem.appendChild(urlPart);
-                listItem.appendChild(faviconPart);
-                listItem.appendChild(removeButton);
-
-                if (bookmarkList) {
-                    bookmarkList.insertBefore(listItem, bookmarkList.firstChild); // Add to the top
-                    makeDraggable(listItem); // Ensure newly added item is draggable
-                } else {
-                    console.error("bookmarkList element is not found.");
-                }
-
-                const storedBookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-                storedBookmarks.push({ url, faviconUrl });
-                localStorage.setItem('bookmarks', JSON.stringify(storedBookmarks));
-
-                loadBookmarks();
-            });
-        });
-    }
-
-    function fetchFavicon(url) {
-        return new Promise((resolve, reject) => {
-            const parser = document.createElement('a');
-            parser.href = url;
-
-            const faviconUrl = `${parser.protocol}//${parser.host}/favicon.ico`;
+    // Utility Functions
+    const fetchFavicon = (url) => {
+        return new Promise((resolve) => {
+            const parser = new URL(url);
+            const faviconUrl = `${parser.origin}/favicon.ico`;
 
             const img = new Image();
             img.onload = () => resolve(faviconUrl);
-            img.onerror = () => resolve(getFallbackFavicon(url));
+            img.onerror = () => resolve(generateFallbackFavicon(parser.hostname));
             img.src = faviconUrl;
         });
-    }
+    };
 
-    function getFallbackFavicon(url) {
-        const firstLetter = new URL(url).hostname.charAt(0).toUpperCase();
+    const generateFallbackFavicon = (hostname) => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
-        canvas.width = 50;
-        canvas.height = 50;
+        canvas.width = canvas.height = 50;
+
         ctx.fillStyle = '#ccc';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#000';
         ctx.font = '30px Arial';
-        ctx.fillText(firstLetter, 15, 35);
+        ctx.fillText(hostname.charAt(0).toUpperCase(), 15, 35);
+
         return canvas.toDataURL();
-    }
+    };
 
-    function removeLog(listItem, url) {
-        logList.removeChild(listItem);
+        // Shorten long URLs
+    const shortenUrl = (url) => (url.length > 30 ? `${url.substring(0, 30)}...` : url);
 
-        const storedLogs = JSON.parse(localStorage.getItem('logs')) || [];
-        const updatedLogs = storedLogs.filter(logEntry => logEntry.url !== url);
-        localStorage.setItem('logs', JSON.stringify(updatedLogs));
-    }
 
-    logButton.addEventListener('click', async () => {
-        logUrlAndFavicon();
-        triggerConfetti(); // Trigger confetti when the log button is clicked
+    const addItemToList = (list, itemData, localStorageKey) => {
+        const listItem = document.createElement('li');
+        listItem.dataset.url = itemData.url; // Store the URL as a dataset
+        listItem.classList.add('log-item');
+        listItem.style.position = 'relative'; // Required for positioning the remove button
     
-        // Wait for the next event loop cycle to ensure other operations are completed
-        await new Promise(resolve => setTimeout(resolve, 1));
-        updateLogItemsDarkMode();
-    });
-
-
+        // Capture the current datetime
+        const datetime = new Date().toLocaleString();
+        itemData.datetime = datetime; // Save datetime in itemData
     
-    bookmarkButton.addEventListener('click', async () => {
-        bookmarkUrlAndFavicon();
-        await new Promise(resolve => setTimeout(resolve, 1));
-        updateLogItemsDarkMode();
-    });
-
-    loadLogs();
-    loadBookmarks();
-
-    function loadLogs() {
-        logList.innerHTML = '';
-
-        const storedLogs = JSON.parse(localStorage.getItem('logs')) || [];
-        storedLogs.forEach((logEntry) => {
-            const listItem = document.createElement('li');
-            listItem.dataset.url = logEntry.url;
-            listItem.classList.add('log-item');
-
-            const urlPart = document.createElement('a');
-            urlPart.classList.add('short-url');
-            urlPart.href = logEntry.url;
-            urlPart.textContent = shortenUrl(logEntry.url);
-            urlPart.target = '_blank';
-
-            const faviconPart = document.createElement('img');
-            faviconPart.classList.add('favicon-box');
-            faviconPart.src = logEntry.faviconUrl;
-            faviconPart.style.width = '20px';
-            faviconPart.style.height = '20px';
-            faviconPart.style.objectFit = 'cover';
-
-            const removeButton = document.createElement('span');
-            removeButton.classList.add('remove-btn');
-            removeButton.textContent = 'X';
-            removeButton.addEventListener('click', (e) => {
-                e.stopPropagation();
-                removeLog(listItem, logEntry.url);
-            });
-
-            listItem.appendChild(faviconPart);
-            listItem.appendChild(urlPart);
-            listItem.appendChild(removeButton);
-
-            logList.insertBefore(listItem, logList.firstChild);
-            makeDraggable(listItem); // Ensure loaded items are draggable
+        // Create the favicon container
+        const faviconElement = document.createElement('div');
+        faviconElement.classList.add('favicon-box');
+        faviconElement.style.cursor = 'pointer'; // Indicate clickability
+    
+        // Apply flexbox styles to center the favicon image
+        faviconElement.style.display = 'flex';
+        faviconElement.style.justifyContent = 'center';  // Horizontally center
+        faviconElement.style.alignItems = 'center';      // Vertically center
+        faviconElement.style.width = '20px';              // Set a fixed width
+        faviconElement.style.height = '20px';             // Set a fixed height
+    
+        const faviconImg = document.createElement('img');
+        faviconImg.src = itemData.faviconUrl;
+        faviconImg.style.width = '20px';
+        faviconImg.style.height = '20px';
+        faviconImg.style.objectFit = 'cover';
+    
+        faviconElement.appendChild(faviconImg); // Append the image to the box
+    
+        // Function to extract the color from the top-left pixel of the favicon
+        const getEdgeColor = (faviconUrl, callback) => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            img.src = faviconUrl;
+            img.onload = function() {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                const imageData = ctx.getImageData(0, 0, 1, 1); // Get the color of the top-left pixel
+                const rgba = imageData.data;
+    
+                // Check if the pixel is transparent (alpha = 0)
+                if (rgba[3] === 0) {
+                    callback("rgb(255, 255, 255)"); // Return white if transparent
+                } else {
+                    const color = `rgb(${rgba[0]}, ${rgba[1]}, ${rgba[2]})`;
+                    callback(color); // Return the color
+                }
+            };
+        };
+    
+        // Get the edge color of the favicon and set the background color of the list item
+        getEdgeColor(itemData.faviconUrl, (edgeColor) => {
+            listItem.style.backgroundColor = edgeColor; // Set background color based on the edge pixel
         });
-    }
+    
+        // Add click event to the favicon box to open the internship details
+        faviconElement.addEventListener('click', (e) => {
+            openInternshipDetails(itemData); // Call a function to display the internship details
+        });
+    
+        // Prevent clicks on the remove button from propagating to the favicon
+        faviconElement.addEventListener('click', (e) => {
+            if (e.target.classList.contains('remove-btn')) {
+                e.stopPropagation();
+            }
+        });
+    
+        // Remove button for deleting the item
+        const removeButton = document.createElement('span');
+        removeButton.classList.add('remove-btn');
+        removeButton.textContent = '-';
+        removeButton.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent click from triggering favicon action
+            removeItem(listItem, localStorageKey);
+        });
+    
+        // Append elements to the list item
+        listItem.append(faviconElement, removeButton);
+        list.prepend(listItem);
+    
+        // Save the data to localStorage
+        saveToLocalStorage(localStorageKey, itemData);
+    
+        // Make the item draggable
+        makeDraggable(listItem);
+    };
 
-    function loadBookmarks() {
-        if (bookmarkList) {
-            bookmarkList.innerHTML = '';
 
-            const storedBookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-            storedBookmarks.forEach((bookmarkEntry) => {
-                const listItem = document.createElement('li');
-                listItem.dataset.url = bookmarkEntry.url;
-                listItem.classList.add('log-item');
 
-                const urlPart = document.createElement('a');
-                urlPart.classList.add('short-url');
-                urlPart.href = bookmarkEntry.url;
-                urlPart.textContent = shortenUrl(bookmarkEntry.url);
-                urlPart.target = '_blank';
 
-                const faviconPart = document.createElement('img');
-                faviconPart.classList.add('favicon-box');
-                faviconPart.src = bookmarkEntry.faviconUrl;
-                faviconPart.style.width = '20px';
-                faviconPart.style.height = '20px';
-                faviconPart.style.objectFit = 'cover';
 
-                const removeButton = document.createElement('span');
-                removeButton.classList.add('remove-btn');
-                removeButton.textContent = 'X';
-                removeButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    removeBookmark(listItem, bookmarkEntry.url);
-                });
+    // Function to open internship details in a new container
+    const openInternshipDetails = (itemData) => {
+        // Create a semi-transparent overlay
+        const overlay = document.createElement('div');
+        overlay.classList.add('overlay');
+        overlay.style.position = 'fixed';
+        overlay.style.top = 0;
+        overlay.style.left = 0;
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        overlay.style.zIndex = '999';
+        overlay.style.transition = 'opacity 0.3s ease-in-out';
+        overlay.style.opacity = '1';
 
-                listItem.appendChild(faviconPart);
-                listItem.appendChild(urlPart);
-                listItem.appendChild(removeButton);
+        // Create the details container
+        const detailsContainer = document.createElement('div');
+        detailsContainer.classList.add('details-container');
+        detailsContainer.style.position = 'absolute';
+        detailsContainer.style.top = '50%';
+        detailsContainer.style.left = '50%';
+        detailsContainer.style.transform = 'translate(-50%, -50%)';
+        detailsContainer.style.backgroundColor = 'white';
+        detailsContainer.style.padding = '20px';
+        detailsContainer.style.borderRadius = '8px';
+        detailsContainer.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.2)';
+        detailsContainer.style.textAlign = 'center';
 
-                bookmarkList.insertBefore(listItem, bookmarkList.firstChild);
-                makeDraggable(listItem); // Ensure loaded items are draggable
-            });
-        } else {
-            console.error("bookmarkList element is not found.");
+        // Fill with internship information
+        detailsContainer.innerHTML = `
+            <p><strong>Shortened URL:</strong> <a href="${itemData.url}" target="_blank">${shortenUrl(itemData.url)}</a></p>
+            <p><strong>Added on:</strong> ${itemData.datetime}</p>
+        `;
+
+        // Append the details container to the overlay
+        overlay.appendChild(detailsContainer);
+
+        // Add the overlay to the body
+        document.body.appendChild(overlay);
+
+        // Close the details container when clicking outside it
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) { // Ensure only clicks on the overlay (not the container) close it
+                overlay.style.opacity = '0'; // Trigger fade-out effect
+                setTimeout(() => overlay.remove(), 300); // Remove after transition
+            }
+        });
+    };
+
+    // Remove Item
+    const removeItem = (listItem, localStorageKey) => {
+        const list = listItem.parentElement;
+        const url = listItem.dataset.url;
+
+        list.removeChild(listItem);
+        const storedItems = JSON.parse(localStorage.getItem(localStorageKey)) || [];
+        const updatedItems = storedItems.filter((item) => item.url !== url);
+        localStorage.setItem(localStorageKey, JSON.stringify(updatedItems));
+    };
+
+    // Save to Local Storage
+    const saveToLocalStorage = (key, data) => {
+        const storedItems = JSON.parse(localStorage.getItem(key)) || [];
+        if (!storedItems.some((item) => item.url === data.url)) {
+            storedItems.push(data);
+            localStorage.setItem(key, JSON.stringify(storedItems));
         }
-    }
+    };
 
-    function removeBookmark(listItem, url) {
-        bookmarkList.removeChild(listItem);
+    // Load Items from Local Storage
+    const loadItems = (list, localStorageKey) => {
+        list.innerHTML = '';
+        const storedItems = JSON.parse(localStorage.getItem(localStorageKey)) || [];
+        storedItems.forEach((itemData) => addItemToList(list, itemData, localStorageKey));
+    };
 
-        const storedBookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
-        const updatedBookmarks = storedBookmarks.filter(bookmarkEntry => bookmarkEntry.url !== url);
-        localStorage.setItem('bookmarks', JSON.stringify(updatedBookmarks));
-    }
+    // Log Current Tab
+    const logCurrentTab = () => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            const url = tabs[0].url;
+            fetchFavicon(url).then((faviconUrl) => {
+                addItemToList(logList, { url, faviconUrl }, 'logs');
+                triggerConfetti();
+            });
+        });
+    };
 
-    function shortenUrl(url) {
-        return url.length > 30 ? url.substring(0, 30) + '...' : url;
-    }
+    // Bookmark Current Tab
+    const bookmarkCurrentTab = () => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            const url = tabs[0].url;
+            fetchFavicon(url).then((faviconUrl) => {
+                addItemToList(bookmarkList, { url, faviconUrl }, 'bookmarks');
+            });
+        });
+    };
 
-
-    // Allow items to be draggable
-    function makeDraggable(item) {
+    // Make List Item Draggable
+    const makeDraggable = (item) => {
         item.draggable = true;
         item.addEventListener('dragstart', handleDragStart);
-    }
+    };
 
+    const handleDragStart = (event) => {
+        const { target } = event;
+        event.dataTransfer.setData('text/plain', target.dataset.url);
+        event.dataTransfer.setData('source', target.parentNode.id);
+        target.classList.add('dragging');
+    };
 
-    // Handle the start of a drag
-    function handleDragStart(e) {
-        e.dataTransfer.setData('text/plain', e.target.dataset.url); // Store the URL of the dragged item
-        e.dataTransfer.setData('source', e.target.parentNode.id);  // Store the source list's ID
-        e.target.classList.add('dragging');
-    }
+    const handleDragOver = (event) => event.preventDefault();
 
-    // Allow dropping by preventing default
-    function handleDragOver(e) {
-        e.preventDefault();
-    }
+    const handleDrop = (event) => {
+        event.preventDefault();
 
-    // Handle the drop event
-    function handleDrop(e) {
-        e.preventDefault();
-        const url = e.dataTransfer.getData('text/plain');
-        const source = e.dataTransfer.getData('source');
-        const targetList = e.target.closest('ul');
-    
-        if (targetList && targetList.id !== source) {
-            // Find and remove the dragged item from the source list
-            const sourceList = document.getElementById(source);
-            const draggedItem = [...sourceList.children].find(
-                (child) => child.dataset.url === url
-            );
+        const url = event.dataTransfer.getData('text/plain');
+        const sourceId = event.dataTransfer.getData('source');
+        const targetList = event.target.closest('ul');
+
+        if (targetList && targetList.id !== sourceId) {
+            const sourceList = document.getElementById(sourceId);
+            const draggedItem = [...sourceList.children].find((child) => child.dataset.url === url);
+
             if (draggedItem) {
                 sourceList.removeChild(draggedItem);
-    
-                // Add the item to the target list
-                targetList.appendChild(draggedItem);
-    
-                // Reapply draggable properties
+                targetList.prepend(draggedItem);
+
+                const sourceKey = mapListIdToStorageKey(sourceId);
+                const targetKey = mapListIdToStorageKey(targetList.id);
+
+                moveItemBetweenStorage(sourceKey, targetKey, url);
                 makeDraggable(draggedItem);
-    
-                // Reapply event listeners
-                reattachEventListeners(draggedItem, targetList.id);
-    
-                // Update local storage
-                updateLocalStorage(
-                    mapListIdToLocalStorageKey(source),
-                    url,
-                    mapListIdToLocalStorageKey(targetList.id)
-                );
-    
-                // Trigger confetti if moved from bookmarkList to logList
-                if (source === 'bookmark-list' && targetList.id === 'log-list') {
-                    triggerConfetti();
-                }
             }
         }
-    }
+    };
 
-    function reattachEventListeners(item, targetListId) {
-        const removeButton = item.querySelector('.remove-btn');
-        if (removeButton) {
-            const localStorageKey = mapListIdToLocalStorageKey(targetListId);
-            removeButton.addEventListener('click', (ev) => {
-                ev.stopPropagation();
-                removeLogOrBookmark(item, localStorageKey);
-            });
+    // Move Item Between Storage
+    const moveItemBetweenStorage = (sourceKey, targetKey, url) => {
+        const sourceItems = JSON.parse(localStorage.getItem(sourceKey)) || [];
+        const targetItems = JSON.parse(localStorage.getItem(targetKey)) || [];
+
+        const item = sourceItems.find((entry) => entry.url === url);
+        if (item) {
+            sourceItems.splice(sourceItems.indexOf(item), 1);
+            targetItems.push(item);
+
+            localStorage.setItem(sourceKey, JSON.stringify(sourceItems));
+            localStorage.setItem(targetKey, JSON.stringify(targetItems));
         }
-    }
+    };
 
-    function removeLogOrBookmark(item, localStorageKey) {
-        const list = item.parentNode;
-        list.removeChild(item);
-    
-        const storedItems = JSON.parse(localStorage.getItem(localStorageKey)) || [];
-        const updatedItems = storedItems.filter(
-            (entry) => entry.url !== item.dataset.url
-        );
-        localStorage.setItem(localStorageKey, JSON.stringify(updatedItems));
-    }
+    const mapListIdToStorageKey = (listId) => {
+        return listId === 'log-list' ? 'logs' : listId === 'bookmark-list' ? 'bookmarks' : null;
+    };
 
-    function mapListIdToLocalStorageKey(listId) {
-        if (listId === 'log-list') return 'logs';
-        if (listId === 'bookmark-list') return 'bookmarks';
-        return null;
-    }
+    // Event Listeners
+    logButton.addEventListener('click', logCurrentTab);
+    bookmarkButton.addEventListener('click', bookmarkCurrentTab);
 
-    // Update localStorage when an item is moved
-    function updateLocalStorage(source, url, target) {
-        const sourceData = JSON.parse(localStorage.getItem(source)) || [];
-        const targetData = JSON.parse(localStorage.getItem(target)) || [];
+    // Initialize
+    loadItems(logList, 'logs');
+    loadItems(bookmarkList, 'bookmarks');
 
-        // Remove the URL from the source list
-        const updatedSource = sourceData.filter((entry) => entry.url !== url);
-        localStorage.setItem(source, JSON.stringify(updatedSource));
-
-        // Add the URL to the target list
-        const movedItem = sourceData.find((entry) => entry.url === url);
-        if (movedItem) {
-            targetData.push(movedItem);
-            localStorage.setItem(target, JSON.stringify(targetData));
-        }
-    }
-
-    // Make all existing items draggable
-    document.querySelectorAll('.log-item').forEach(makeDraggable);
-
-    // Add event listeners for drag-and-drop on both lists
     logList.addEventListener('dragover', handleDragOver);
     logList.addEventListener('drop', handleDrop);
-
     bookmarkList.addEventListener('dragover', handleDragOver);
     bookmarkList.addEventListener('drop', handleDrop);
-
 
     /* DARK MODE */
 
@@ -480,11 +410,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     /* CELEBRATIONS */
-
-
-    let rocket = null; // Declare the rocket globally to retain reference
-    showRocket()
-
     const savedCelebration = localStorage.getItem('celebration-type');
     if (savedCelebration) {
         document.getElementById('celebration-type').value = savedCelebration;
@@ -494,7 +419,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedCelebration = this.value;
         localStorage.setItem('celebration-type', selectedCelebration);
     });
-
 
     // Function to trigger the confetti
     function triggerConfetti() {
@@ -517,64 +441,121 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 
-    function showRocket() {
-        // Create the planet element (a circle with a gradient to make it look like a planet)
-        const planet = document.createElement('div');
-        planet.style.position = 'absolute';
-        planet.style.left = `${window.innerWidth / 2 - 80}px`; // Horizontally centered
-        planet.style.bottom = '-80px'; // Positioned at the very bottom of the screen
-        planet.style.width = '300px'; // Size of the planet
-        planet.style.height = '100px'; // Size of the planet
-        planet.style.borderRadius = '50%'; // Makes it a circle
-        planet.style.background = 'radial-gradient(circle,rgb(241, 162, 117),rgb(221, 138, 29))'; // Gradient for a planet-like effect
-        planet.style.boxShadow = '0 0 20px rgba(0, 0, 0, 0.5)'; // Adds a shadow for depth
-        planet.style.zIndex = '1'; // Ensures the planet stays behind the rocket
+    /* ROCKET */
 
-        // Append planet to the body
+    let rocket = null; // Declare rocket globally to retain reference
+
+    // Initial call to showRocket to display rocket and planet
+    showRocket();
+
+    // Function to display rocket and planet
+    function showRocket() {
+        // Remove previously created planet or rocket to avoid duplicates
+        const existingPlanet = document.querySelector('.planet');
+        if (existingPlanet) existingPlanet.remove();
+        
+        const existingRocket = document.querySelector('.rocket');
+        if (existingRocket) existingRocket.remove();
+
+        // Create the planet element
+        const planet = document.createElement('div');
+        planet.classList.add('planet');
+        planet.style.position = 'absolute';
+        planet.style.left = '-35%';
+        planet.style.bottom = '-80px';
+        planet.style.width = '500px';
+        planet.style.height = '100px';
+        planet.style.borderRadius = '50%';
+        planet.style.background = 'radial-gradient(circle, rgb(241, 162, 117), rgb(221, 138, 29))';
+        planet.style.boxShadow = '0 0 20px rgba(0, 0, 0, 0.5)';
+        planet.style.zIndex = '1';
+
         document.body.appendChild(planet);
 
-        // Create the rocket element
+        // Create and display the rocket
         rocket = document.createElement('img');
-        rocket.src = './assets/Rocket-Emoji2.png'; // Initial rocket image
-        rocket.alt = 'Rocket'; // Alt text for accessibility
+        rocket.classList.add('rocket');
+        rocket.src = './assets/Rocket-Emoji2.png';
+        rocket.alt = 'Rocket';
         rocket.style.position = 'absolute';
-        rocket.style.width = '40px'; // Adjust the width of the rocket image
-        rocket.style.height = '40px'; // Adjust the height of the rocket image
-        rocket.style.left = `${window.innerWidth / 2 - 15}px`; // Horizontally centered
-        rocket.style.bottom = '0px'; // Position it just above the planet (adjust if necessary)
-        rocket.style.zIndex = '2'; // Ensure the rocket is above the planet
+        rocket.style.width = '60px';
+        rocket.style.height = '60px';
+        rocket.style.left = '2%';
+        rocket.style.bottom = '6px';
+        rocket.style.zIndex = '2';
 
-        // Append rocket to the body
         document.body.appendChild(rocket);
     }
 
+    // Function to update the flag
+    const savedFlag = localStorage.getItem('flag-type') || '🇬🇧'; // Default to 🇬🇧 if no flag is saved
+
+    // Set the flag dropdown value to the saved flag or default
+    document.getElementById('flag-type').value = savedFlag;
+
+    // Event listener to save the selected flag in localStorage
+    document.getElementById('flag-type').addEventListener('change', function() {
+        const selectedFlag = this.value;
+        localStorage.setItem('flag-type', selectedFlag); // Save the selected flag
+        updateFlag(selectedFlag); // Call updateFlag to update the flag
+    });
+
+    // Call updateFlag immediately to show the initial flag
+    updateFlag(savedFlag);
+
+    // Function to update the flag
+    function updateFlag(selectedFlag) {
+        // Remove existing flag stick if it exists
+        const existingFlagStick = document.querySelector('.flag-stick');
+        if (existingFlagStick) existingFlagStick.remove();
+
+        // Create the flag stick element
+        const flagStick = document.createElement('div');
+        flagStick.classList.add('flag-stick');
+        flagStick.style.position = 'absolute';
+        flagStick.style.left = '20%';
+        flagStick.style.bottom = '20px';
+        flagStick.style.width = '1px';
+        flagStick.style.height = '30px';
+        flagStick.style.backgroundColor = 'rgb(54, 53, 53)';
+        flagStick.style.zIndex = '2';
+
+        // Create the flag emoji element
+        const flagEmojiElement = document.createElement('div');
+        flagEmojiElement.textContent = selectedFlag; // Set the selected flag emoji
+        flagEmojiElement.style.position = 'absolute';
+        flagEmojiElement.style.fontSize = '20px';
+        flagEmojiElement.style.zIndex = '2';
+        flagEmojiElement.style.bottom = '10px'; // Move flag higher on the stick
+
+        flagStick.appendChild(flagEmojiElement);
+        flagStick.style.transform = 'rotate(5deg)';
+
+        // Append the flag stick to the body
+        document.body.appendChild(flagStick);
+    }
+    
     // Trigger the rocket blast-off
     function triggerRocketBlastOff() {
         if (rocket) {
-            // Change the rocket image to the second image (Rocket-Emoji.png) during the blast-off
             rocket.src = './assets/Rocket-Emoji.png'; // Change to the second rocket image
-
-            // Animate the rocket to blast off (move vertically upwards)
-            rocket.style.transition = 'transform 5s cubic-bezier(0.42, 0, 1, 1)'; // Transition only for the transform property
-            rocket.style.transform = 'translateY(-160vh)'; // Combine the rotation with the upward translation
-
-            // After the rocket has moved off-screen, return it to the original position
+    
+            rocket.style.transition = 'transform 5s cubic-bezier(0.42, 0, 1, 1)';
+            rocket.style.transform = 'translateY(-160vh)';
+    
             setTimeout(() => {
-                rocket.style.transition = 'transform 5s ease-in-out'; // Transition back for the transform property only
-                rocket.style.transform = 'translateY(0)'; // Return to initial position (bottom of the screen)
-            }, 6000); // After the rocket has been off-screen for 6 seconds
-
-            // Listen for when the rocket's transition ends (after landing)
+                rocket.style.transition = 'transform 5s ease-in-out';
+                rocket.style.transform = 'translateY(0)';
+            }, 6000);
+    
             rocket.addEventListener('transitionend', function onTransitionEnd(event) {
-                // Only change back to Rocket-Emoji.png when the rocket has finished landing
-                if (event.propertyName === 'transform') { // Ensure it's the "transform" transition that completed
+                if (event.propertyName === 'transform') {
                     rocket.src = './assets/Rocket-Emoji2.png'; // Change back to the original rocket image
-                    rocket.removeEventListener('transitionend', onTransitionEnd); // Clean up the event listener
+                    rocket.removeEventListener('transitionend', onTransitionEnd);
                 }
             });
         }
     }
-
 
 
 

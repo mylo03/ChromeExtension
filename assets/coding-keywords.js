@@ -1,5 +1,5 @@
 // keywords.js
-export const keywords = [
+export const codingKeywords = [
     "Python", "JavaScript", "React", "HTML", "CSS", "Node.js", 
     "Java", "C", "Ruby", "PHP", "Swift", "Go", "Kotlin", 
     "TypeScript", "R", "Rust", "Scala", "Perl", "Lua", "Dart", 

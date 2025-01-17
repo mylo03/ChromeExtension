@@ -1,5 +1,6 @@
 import { searchKeywordsInText } from './keywordSearch.js';
 
+
 export function initializeCVUploadHandlers() {
     const dropArea = document.getElementById('drop-area');
     const fileInput = document.getElementById('cvFile');
