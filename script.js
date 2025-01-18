@@ -1,5 +1,6 @@
 import * as pdfjsLib from './libs/pdf.mjs'; 
 import { initializeCVUploadHandlers } from './Scripts/cvUploadHandler.js';
+import { openInternshipDetails } from './Scripts/jobdetails.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     pdfjsLib.GlobalWorkerOptions.workerSrc = chrome.runtime.getURL('./libs/pdf.worker.mjs');
@@ -36,18 +37,23 @@ document.addEventListener('DOMContentLoaded', () => {
         return canvas.toDataURL();
     };
 
-        // Shorten long URLs
-    const shortenUrl = (url) => (url.length > 30 ? `${url.substring(0, 30)}...` : url);
-
 
     const addItemToList = (list, itemData, localStorageKey) => {
+        /* Tag Searching */
+        const keywords = ['python', 'React', 'Native'];
+        const pageText = document.body.innerText.toLowerCase();
+        const foundKeywords = keywords.filter(keyword => pageText.includes(keyword.toLowerCase()));
+        if (foundKeywords.length > 0) {
+            localStorage.setItem('keywords', JSON.stringify(foundKeywords)); // Save the found keywords
+        }
+
         const listItem = document.createElement('li');
         listItem.dataset.url = itemData.url; // Store the URL as a dataset
         listItem.classList.add('log-item');
         listItem.style.position = 'relative'; // Required for positioning the remove button
     
         // Capture the current datetime
-        const datetime = new Date().toLocaleString();
+        const datetime = new Date().toISOString(); 
         itemData.datetime = datetime; // Save datetime in itemData
     
         // Create the favicon container
@@ -131,57 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
 
-
-
-
-    // Function to open internship details in a new container
-    const openInternshipDetails = (itemData) => {
-        // Create a semi-transparent overlay
-        const overlay = document.createElement('div');
-        overlay.classList.add('overlay');
-        overlay.style.position = 'fixed';
-        overlay.style.top = 0;
-        overlay.style.left = 0;
-        overlay.style.width = '100%';
-        overlay.style.height = '100%';
-        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-        overlay.style.zIndex = '999';
-        overlay.style.transition = 'opacity 0.3s ease-in-out';
-        overlay.style.opacity = '1';
-
-        // Create the details container
-        const detailsContainer = document.createElement('div');
-        detailsContainer.classList.add('details-container');
-        detailsContainer.style.position = 'absolute';
-        detailsContainer.style.top = '50%';
-        detailsContainer.style.left = '50%';
-        detailsContainer.style.transform = 'translate(-50%, -50%)';
-        detailsContainer.style.backgroundColor = 'white';
-        detailsContainer.style.padding = '20px';
-        detailsContainer.style.borderRadius = '8px';
-        detailsContainer.style.boxShadow = '0 4px 10px rgba(0, 0, 0, 0.2)';
-        detailsContainer.style.textAlign = 'center';
-
-        // Fill with internship information
-        detailsContainer.innerHTML = `
-            <p><strong>Shortened URL:</strong> <a href="${itemData.url}" target="_blank">${shortenUrl(itemData.url)}</a></p>
-            <p><strong>Added on:</strong> ${itemData.datetime}</p>
-        `;
-
-        // Append the details container to the overlay
-        overlay.appendChild(detailsContainer);
-
-        // Add the overlay to the body
-        document.body.appendChild(overlay);
-
-        // Close the details container when clicking outside it
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) { // Ensure only clicks on the overlay (not the container) close it
-                overlay.style.opacity = '0'; // Trigger fade-out effect
-                setTimeout(() => overlay.remove(), 300); // Remove after transition
-            }
-        });
-    };
 
     // Remove Item
     const removeItem = (listItem, localStorageKey) => {

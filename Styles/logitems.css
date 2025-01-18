@@ -64,3 +64,24 @@
     height: 30px;
     object-fit: cover;
 }
+
+
+
+
+
+
+/* Overlay Styles */
+.overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent dark background */
+    z-index: 1000;
+}
+
+
