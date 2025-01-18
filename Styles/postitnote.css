@@ -5,20 +5,19 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.7);
     z-index: 999;
     transition: opacity 0.3s ease-in-out;
     opacity: 1;
 }
 
-/* Details Container Styles */
 .details-container {
-    max-width: 200px;
+    width: 250px;
     height: 250px;
     text-align: center;
     background-color: #efec85 !important; /* Yellow background */
     padding: 20px;
-    border-radius: 20px;
+    border-radius: 10px;
     box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow */
     position: absolute;
     top: 50%;
@@ -31,84 +30,52 @@
     color: rgb(0, 0, 0); /* White text for readability */
 }
 
-/* Date Box Styles (Top Left Corner) */
-.date-box {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background-color: rgb(221, 214, 115); /* Slightly darker yellow */
-    color: rgb(0, 0, 0);
-    padding: 5px 5px;
-    border-radius: none;
-    font-size: 16px;
-    font-weight: bold;
-    border: 1px solid black; /* Black border */
-    text-align: center; /* Center the text */
-    width: 40px; /* Make sure it fits the content nicely */
-}
 
-/* Date Box Month Adjustment (for multi-line date) */
-.date-box span {
-    display: block; /* Makes the month appear below the day */
+/* Date and Link Styles */
+.details-container .info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
     font-size: 14px;
-    font-weight: normal;
 }
 
-/* Close Button Styles (Top Right Corner) */
-.close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: transparent;
-    border: none;
-    font-size: 18px;
-    color: #5b5959;
-    cursor: pointer;
+.details-container .info-row span {
+    font-weight: bold;
 }
 
-.close-button:hover {
-    color: #242424; /* Change color to red on hover */
-    transform: scale(1.2); /* Slightly increase the size of the button */
+/* Separator Line */
+.details-container .separator {
+    margin: 15px 0;
+    border-top: 1px solid #555; /* Thin line separator */
 }
 
-/* Link Styles within the Details Container */
-.details-container a {
-    margin-top: 15px; /* Lower the URL a bit */
-    color: #007bff;
-    text-decoration: none;
-}
-
-.details-container a:hover {
-    text-decoration: underline;
-}
-
-/* Notes Textarea (Prevent Expanding and Allow Scrolling) */
+/* Notes Textarea Styles */
 .details-container textarea {
-    background-color: #333;
-    color: white;
-    border: 1px solid #555;
+    background-color: transparent;
+    color: rgb(0, 0, 0);
+    border: none;
     width: 100%;
     height: 80px; /* Fixed height */
-    resize: none; /* Prevent resizing the textarea */
-    overflow-y: auto; /* Allow vertical scrolling */
+    resize: none;
+    overflow-y: auto;
 }
 
 /* Keyframe Animation for Fade In */
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translate(-50%, -55%); /* Start slightly above center */
+        transform: translate(-50%, -55%);
     }
     to {
         opacity: 1;
-        transform: translate(-50%, -50%); /* End at the center */
+        transform: translate(-50%, -50%);
     }
 }
 
 /* Change the body background color when the overlay is active */
 .overlay-active body {
-    background-color: black; /* Change body background to black */
-    color: white; /* Change text color to white */
+    background-color: black;
+    color: white;
 }
 
 /* Ensure links stay visible even in dark mode */

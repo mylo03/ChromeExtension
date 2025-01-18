@@ -39,14 +39,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     const addItemToList = (list, itemData, localStorageKey) => {
-        /* Tag Searching */
-        const keywords = ['python', 'React', 'Native'];
-        const pageText = document.body.innerText.toLowerCase();
-        const foundKeywords = keywords.filter(keyword => pageText.includes(keyword.toLowerCase()));
-        if (foundKeywords.length > 0) {
-            localStorage.setItem('keywords', JSON.stringify(foundKeywords)); // Save the found keywords
-        }
 
+        /* Tag Searching */
         const listItem = document.createElement('li');
         listItem.dataset.url = itemData.url; // Store the URL as a dataset
         listItem.classList.add('log-item');
@@ -138,6 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+
     // Remove Item
     const removeItem = (listItem, localStorageKey) => {
         const list = listItem.parentElement;
@@ -165,24 +160,35 @@ document.addEventListener('DOMContentLoaded', () => {
         storedItems.forEach((itemData) => addItemToList(list, itemData, localStorageKey));
     };
 
-    // Log Current Tab
     const logCurrentTab = () => {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             const url = tabs[0].url;
-            fetchFavicon(url).then((faviconUrl) => {
-                addItemToList(logList, { url, faviconUrl }, 'logs');
-                triggerConfetti();
-            });
+            const storedLogs = JSON.parse(localStorage.getItem('logs')) || []; // Add default empty array if no logs are found
+            const storedBookmarks = JSON.parse(localStorage.getItem('bookmarks')) || []; // Same for bookmarks
+    
+            // Check if the URL is not already in logs or bookmarks
+            if (!storedLogs.some(item => item.url === url) && !storedBookmarks.some(item => item.url === url)) {
+                fetchFavicon(url).then((faviconUrl) => {
+                    addItemToList(logList, { url, faviconUrl }, 'logs');
+                    triggerConfetti();
+                });
+            }
         });
     };
-
+    
     // Bookmark Current Tab
     const bookmarkCurrentTab = () => {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             const url = tabs[0].url;
-            fetchFavicon(url).then((faviconUrl) => {
-                addItemToList(bookmarkList, { url, faviconUrl }, 'bookmarks');
-            });
+            const storedLogs = JSON.parse(localStorage.getItem('logs')) || []; // Correct variable name
+            const storedBookmarks = JSON.parse(localStorage.getItem('bookmarks')) || []; // Add default empty array
+    
+            // Check if the URL is not already in logs or bookmarks
+            if (!storedLogs.some(item => item.url === url) && !storedBookmarks.some(item => item.url === url)) {
+                fetchFavicon(url).then((faviconUrl) => {
+                    addItemToList(bookmarkList, { url, faviconUrl }, 'bookmarks');
+                });
+            }
         });
     };
 
@@ -223,7 +229,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 makeDraggable(draggedItem);
             }
         }
+
+        if (sourceId === 'bookmark-list' && targetList.id === 'log-list') {
+            triggerConfetti();
+        }
     };
+
 
     // Move Item Between Storage
     const moveItemBetweenStorage = (sourceKey, targetKey, url) => {
@@ -357,9 +368,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     initializeCVUploadHandlers();
-
-
-
 
 
 
@@ -511,6 +519,55 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
+
+
+
+
+    /* GREETING */
+    const greetingElement = document.getElementById('greeting');
+    const currentHour = new Date().getHours();
+
+    // Set greeting based on the time of day
+    if (currentHour >= 5 && currentHour < 12) {
+        greetingElement.textContent = 'Good morning!';
+    } else if (currentHour >= 12 && currentHour < 18) {
+        greetingElement.textContent = 'Good afternoon!';
+    } else if (currentHour >= 18 && currentHour < 23) {
+        greetingElement.textContent = 'Good evening!';
+    } else {
+        greetingElement.textContent = 'Late-night hustle, I see!';
+    }
+
+
+    const profileImageElement = document.getElementById('profile-image');
+    const storedImage = localStorage.getItem('profileImage');
+
+    if (storedImage) {
+        profileImageElement.style.backgroundImage = `url(${storedImage})`;
+        document.getElementById('upload-message').style.display = 'none'; // Hide message if there's an image
+    } else {
+        document.getElementById('upload-message').style.display = 'block'; // Show upload message if no image
+    }
+
+    // Handle drag and drop image upload
+    profileImageElement.addEventListener('dragover', (e) => {
+        e.preventDefault();
+    });
+
+    profileImageElement.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const files = e.dataTransfer.files;
+        if (files.length > 0 && files[0].type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const imageUrl = event.target.result;
+                profileImageElement.style.backgroundImage = `url(${imageUrl})`;
+                localStorage.setItem('profileImage', imageUrl); // Save the image in local storage
+                document.getElementById('upload-message').style.display = 'none'; // Hide upload message
+            };
+            reader.readAsDataURL(files[0]);
+        }
+    });
 
 
 

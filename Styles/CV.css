@@ -1,7 +1,7 @@
 #drop-area {
     position: relative;
-    width: 50%; /* Adjust width as needed */
-    height: 180px; /* Adjust height as needed */
+    width: 95%; /* Adjust width as needed */
+    height: 120px; /* Adjust height as needed */
     border: 2px dashed #ccc;
     display: flex;
     justify-content: center;
@@ -11,12 +11,36 @@
     margin: 20px auto; /* Add vertical spacing and center horizontally */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional shadow */
     border-radius: 8px; /* Optional rounded corners */
+    flex-direction: column; /* Allow for vertical layout by default */
 }
 
 #drop-area img {
-    max-width: 100%;   /* Ensures the image scales to fit the container */
-    max-height: 100%;  /* Prevents the image from stretching outside the drop area */
-    object-fit: contain;  /* Keeps the aspect ratio of the image */
+    max-width: 40%; /* Ensures the image scales to fit the container */
+    max-height: 100%; /* Prevents the image from stretching outside the drop area */
+    object-fit: contain; /* Keeps the aspect ratio of the image */
+}
+
+#file-info {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row; /* Align image and title horizontally */
+    justify-content: flex-start; /* Align content to the left */
+    align-items: center; /* Vertically align items */
+    gap: 20px; /* Add space between the image and title */
+    padding: 10px; /* Optional: Add padding inside the container */
+}
+
+#file-info img {
+    width: 50px; /* Set fixed width for image */
+    height: auto; /* Maintain the aspect ratio */
+}
+
+#file-info h3 {
+    font-size: 12px; /* Adjust title size */
+    margin: 0; /* Remove default margin */
+    font-family: Arial, sans-serif;
+    color: #333; /* Adjust title color */
 }
 
 .drop-area.dragging {
@@ -37,7 +61,6 @@
     max-height: 100%;
     object-fit: contain;
 }
-
 
 #keyword-results {
     display: flex;
@@ -65,8 +88,6 @@
     background-color: #f1c40f; /* Yellow for coding keywords */
     color: #2c3e50; /* Dark text */
 }
-
-
 
 .general-keyword {
     background-color: #61c6b2; /* Teal for general keywords */

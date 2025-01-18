@@ -10,13 +10,30 @@ export function initializeCVUploadHandlers() {
     function displaySavedImageAndKeywords() {
         const savedImage = localStorage.getItem('pdfImage');
         const savedText = localStorage.getItem('pdfText'); // Retrieve saved text content
-
+        const savedFileName = localStorage.getItem('pdfFileName'); // Retrieve saved PDF file name
+    
         if (savedImage) {
+            const container = document.createElement('div');
+            container.style.display = 'flex'; // Flexbox layout for image and title
+            container.style.alignItems = 'center'; // Vertically center the items
+            container.style.gap = '20px'; // Add space between image and title
+    
+            // Create and append the image
             const imgElement = document.createElement('img');
             imgElement.src = savedImage;
+            imgElement.style.width = '100px'; // Adjust the image size
+            imgElement.style.height = 'auto';
+    
+            // Create and append the title (PDF file name)
+            const titleElement = document.createElement('h3');
+            titleElement.textContent = savedFileName || 'No File Uploaded'; // Show file name
+    
+            container.appendChild(imgElement);
+            container.appendChild(titleElement);
+    
             fileInfo.innerHTML = ''; // Clear previous content
-            fileInfo.appendChild(imgElement); // Display the saved image inside the drop area
-
+            fileInfo.appendChild(container); // Append the container with image and title
+    
             // Generate keywords if saved text exists
             if (savedText) {
                 searchKeywordsInText(savedText);
@@ -55,6 +72,9 @@ export function initializeCVUploadHandlers() {
                 renderPDF(arrayBuffer);
             };
             fileReader.readAsArrayBuffer(file);
+    
+            // Store the file name
+            localStorage.setItem('pdfFileName', file.name); // Store the file name
         } else {
             fileInfo.innerHTML = `<p>File is not a PDF. Please upload a valid CV.</p>`;
         }
@@ -64,27 +84,27 @@ export function initializeCVUploadHandlers() {
         const loadingTask = pdfjsLib.getDocument(arrayBuffer);
         const pdf = await loadingTask.promise;
         const page = await pdf.getPage(1);
-        const scale = 1.5;
+        const scale = 1.2;
         const viewport = page.getViewport({ scale: scale });
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
-
+    
         canvas.height = viewport.height;
         canvas.width = viewport.width;
-
+    
         await page.render({
             canvasContext: context,
             viewport: viewport,
         }).promise;
-
+    
         const imageUrl = canvas.toDataURL();
         const imgElement = document.createElement('img');
         imgElement.src = imageUrl;
         fileInfo.innerHTML = '';
         fileInfo.appendChild(imgElement);
-
+    
         localStorage.setItem('pdfImage', imageUrl);
-
+    
         // Extract text content
         let textContent = '';
         for (let i = 1; i <= pdf.numPages; i++) {
@@ -94,9 +114,12 @@ export function initializeCVUploadHandlers() {
                 textContent += item.str + ' ';
             });
         }
-
+    
         // Save text content and search for keywords
         localStorage.setItem('pdfText', textContent);
         searchKeywordsInText(textContent);
+    
+        // Immediately update the display after saving the text
+        displaySavedImageAndKeywords();  // <-- Added this line to trigger an update
     }
 }

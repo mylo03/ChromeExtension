@@ -5,7 +5,7 @@
     flex-wrap: wrap; /* Allow items to wrap to the next line */
     gap: 10px; /* Add space between items */
     padding: 10px; /* Add some padding inside the container */
-    max-height: 130px; /* Optional: control height if scrolling is needed */
+    max-height: 50px; /* Optional: control height if scrolling is needed */
     overflow-y: auto; /* Allow vertical scrolling if content overflows */
     border: none; /* Optional: border for the container */
     border-radius: 8px; /* Optional: rounded corners */

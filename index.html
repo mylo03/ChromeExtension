@@ -45,17 +45,39 @@
     <div class="container">
         <!-- Existing "Applied" content -->
         <div id="applied-content" class="tab-content">
+            <!-- Greeting and Profile Section -->
+            <div class="greeting-profile">
+                <h2 id="greeting"></h2> <!-- Dynamic greeting message -->
+                <div class="profile-container">
+                    <!-- This is the area where users can drag and drop an image -->
+                    <div id="profile-image" class="profile-image">
+                        <!-- Default or stored image will be displayed here -->
+                    </div>
+                </div>
+                <div id="upload-message" class="upload-message">
+                    Drag and drop your profile picture here
+                </div>
+            </div>
+        
+            <!-- Applied Section -->
             <div class="grid-for-two">
                 <div class="left-column">
                     <h3>Applied</h3>
                 </div>
-                <div class="right-column"><button id="log-button">+</button></div>
+                <div class="right-column">
+                    <button id="log-button">+</button>
+                </div>
             </div>
             <ul id="log-list" class="droppable"></ul>
-
+        
+            <!-- To Apply Section -->
             <div class="grid-for-two">
-                <div class="left-column"><h3>To Apply</h3></div>
-                <div class="right-column"><button id="bookmark-button">+</button></div>
+                <div class="left-column">
+                    <h3>To Apply</h3>
+                </div>
+                <div class="right-column">
+                    <button id="bookmark-button">+</button>
+                </div>
             </div>
             <ul id="bookmark-list" class="droppable"></ul>
         </div>
