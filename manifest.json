@@ -1,8 +1,8 @@
 {
     "name": "URL Logger",
     "version": "1.0.3",
-    "description": "Logs the date and URL of visited pages",
     "manifest_version": 3,
+    "description": "Logs the date and URL of visited pages",
     "author": "Mylo Farman",
 
     "action": {
@@ -14,18 +14,9 @@
         "128": "icon.png"
     },
 
-    "content_security_policy": {
-        "script-src": "'self'",
-        "object-src": "'none'"
-    },
-
-    "host_permissions": [
-        "http://*/*",
-        "https://*/*"
-    ],
-
     "permissions": [
         "storage",
-        "activeTab"
+        "activeTab",
+        "scripting"
     ]
 }

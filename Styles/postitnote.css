@@ -86,3 +86,35 @@
 .details-container a:hover {
     color: #82bbff;
 }
+
+
+
+
+/* Add a border between tags and notes */
+/* Add a border between tags and notes */
+.section-border {
+    border-top: 1px solid #696969; /* Light border */
+    margin: 10px 0; /* Add spacing around the border */
+}
+
+/* Style for the tags container */
+#saved-tags-job {
+    max-width: 100%; /* Allow it to take up the full width of the parent container */
+    overflow-x: auto; /* Allow horizontal scrolling if content overflows */
+    white-space: nowrap; /* Prevent tags from wrapping onto new lines */
+    padding: 10px; /* Optional: Add padding around the tags */
+    border-radius: 5px; /* Optional: Rounded corners for aesthetics */
+    box-sizing: border-box; /* Ensure padding doesn't affect width calculation */
+    margin-left: 0; 
+}
+
+/* Style for individual tags (you can adjust to your needs) */
+.saved-tags-job span {
+    display: inline-block; /* Ensure tags are displayed inline horizontally */
+    margin-right: 0px;  /* Optional: Space between tags */
+    background-color: #e0e0e0;  /* Optional: Tag background color */
+    padding: 5px 10px; /* Optional: Padding inside each tag */
+    border-radius: 15px; /* Optional: Rounded corners for each tag */
+    font-size: 10px; /* Optional: Font size for readability */
+    cursor: pointer;  /* Optional: Change cursor when hovering over tags */
+}

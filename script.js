@@ -2,7 +2,9 @@ import * as pdfjsLib from './libs/pdf.mjs';
 import { initializeCVUploadHandlers } from './Scripts/cvUploadHandler.js';
 import { openInternshipDetails } from './Scripts/jobdetails.js';
 
+
 document.addEventListener('DOMContentLoaded', () => {
+
     pdfjsLib.GlobalWorkerOptions.workerSrc = chrome.runtime.getURL('./libs/pdf.worker.mjs');
 
     const logList = document.getElementById('log-list');
@@ -38,14 +40,89 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
 
-    const addItemToList = (list, itemData, localStorageKey) => {
+    const logCurrentTab = () => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            const tab = tabs[0];
+        
+            // Function to extract all text content from the page
+            function extractText() {
+                return document.body.innerText; // Get all visible text from the page
+            }
+        
+            // Execute the script in the target tab
+            chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                func: extractText,
+            })
+            .then((results) => {
+                // The result will be in results[0].result, which contains all the page's text
+                const pageText = results[0].result;
+        
+                // Get the URL of the current tab
+                const url = tab.url;
+                const storedLogs = JSON.parse(localStorage.getItem('logs')) || []; // Add default empty array if no logs are found
+                const storedBookmarks = JSON.parse(localStorage.getItem('bookmarks')) || []; // Same for bookmarks
+        
+                // Check if the URL is not already in logs or bookmarks
+                if (!storedLogs.some(item => item.url === url) && !storedBookmarks.some(item => item.url === url)) {
+                    fetchFavicon(url).then((faviconUrl) => {
+                        // Pass the pageText along with the other data
+                        addItemToList(logList, { url, faviconUrl, pageText }, 'logs');
+                        triggerConfetti();
+                    });
+                }
+            })
+        });
+    };
 
+
+    // Bookmark Current Tab with Page Text
+    const bookmarkCurrentTab = () => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            const tab = tabs[0];
+            const url = tab.url;
+            
+            // Function to extract all text content from the page
+            function extractText() {
+                return document.body.innerText; // Get all visible text from the page
+            }
+
+            // Execute the script in the target tab
+            chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                func: extractText,
+            })
+            .then((results) => {
+                // The result will be in results[0].result, which contains all the page's text
+                const pageText = results[0].result;
+
+                const storedLogs = JSON.parse(localStorage.getItem('logs')) || [];
+                const storedBookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+
+                // Check if the URL is not already in logs or bookmarks
+                if (!storedLogs.some(item => item.url === url) && !storedBookmarks.some(item => item.url === url)) {
+                    fetchFavicon(url).then((faviconUrl) => {
+                        // Pass the pageText along with the other data
+                        addItemToList(bookmarkList, { url, faviconUrl, pageText }, 'bookmarks');
+                        triggerConfetti(); // Trigger confetti for successful bookmarking
+                    });
+                } else {
+                    // The bookmark already exists, so find the existing icon based on faviconUrl
+                    const existingBookmark = [...storedLogs, ...storedBookmarks].find(item => item.url === url);
+                    // You can decide to update this bookmark's data if needed (like pageText, faviconUrl, etc.)
+                }
+            });
+        });
+    };
+
+
+    const addItemToList = (list, itemData, localStorageKey) => {
         /* Tag Searching */
         const listItem = document.createElement('li');
         listItem.dataset.url = itemData.url; // Store the URL as a dataset
         listItem.classList.add('log-item');
         listItem.style.position = 'relative'; // Required for positioning the remove button
-    
+
         // Capture the current datetime
         const datetime = new Date().toISOString(); 
         itemData.datetime = datetime; // Save datetime in itemData
@@ -122,15 +199,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Append elements to the list item
         listItem.append(faviconElement, removeButton);
         list.prepend(listItem);
-    
+
         // Save the data to localStorage
         saveToLocalStorage(localStorageKey, itemData);
     
         // Make the item draggable
         makeDraggable(listItem);
     };
-
-
 
 
     // Remove Item
@@ -160,37 +235,8 @@ document.addEventListener('DOMContentLoaded', () => {
         storedItems.forEach((itemData) => addItemToList(list, itemData, localStorageKey));
     };
 
-    const logCurrentTab = () => {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            const url = tabs[0].url;
-            const storedLogs = JSON.parse(localStorage.getItem('logs')) || []; // Add default empty array if no logs are found
-            const storedBookmarks = JSON.parse(localStorage.getItem('bookmarks')) || []; // Same for bookmarks
     
-            // Check if the URL is not already in logs or bookmarks
-            if (!storedLogs.some(item => item.url === url) && !storedBookmarks.some(item => item.url === url)) {
-                fetchFavicon(url).then((faviconUrl) => {
-                    addItemToList(logList, { url, faviconUrl }, 'logs');
-                    triggerConfetti();
-                });
-            }
-        });
-    };
-    
-    // Bookmark Current Tab
-    const bookmarkCurrentTab = () => {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            const url = tabs[0].url;
-            const storedLogs = JSON.parse(localStorage.getItem('logs')) || []; // Correct variable name
-            const storedBookmarks = JSON.parse(localStorage.getItem('bookmarks')) || []; // Add default empty array
-    
-            // Check if the URL is not already in logs or bookmarks
-            if (!storedLogs.some(item => item.url === url) && !storedBookmarks.some(item => item.url === url)) {
-                fetchFavicon(url).then((faviconUrl) => {
-                    addItemToList(bookmarkList, { url, faviconUrl }, 'bookmarks');
-                });
-            }
-        });
-    };
+
 
     // Make List Item Draggable
     const makeDraggable = (item) => {

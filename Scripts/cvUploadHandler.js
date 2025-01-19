@@ -1,10 +1,10 @@
 import { searchKeywordsInText } from './keywordSearch.js';
 
-
 export function initializeCVUploadHandlers() {
     const dropArea = document.getElementById('drop-area');
     const fileInput = document.getElementById('cvFile');
     const fileInfo = document.getElementById('file-info');
+    const keywordResults = document.getElementById('keyword-results'); // Get keyword results container
 
     // Function to display the saved image and generate keywords (if available)
     function displaySavedImageAndKeywords() {
@@ -36,7 +36,7 @@ export function initializeCVUploadHandlers() {
     
             // Generate keywords if saved text exists
             if (savedText) {
-                searchKeywordsInText(savedText);
+                searchKeywordsInText(savedText, keywordResults); // Pass keywordResults here
             }
         }
     }
@@ -117,7 +117,7 @@ export function initializeCVUploadHandlers() {
     
         // Save text content and search for keywords
         localStorage.setItem('pdfText', textContent);
-        searchKeywordsInText(textContent);
+        searchKeywordsInText(textContent, keywordResults); // Pass keywordResults here
     
         // Immediately update the display after saving the text
         displaySavedImageAndKeywords();  // <-- Added this line to trigger an update

@@ -30,14 +30,14 @@
 /* Style for the remove button */
 .remove-btn {
     position: absolute; /* Position relative to the log item */
-    top: -10px;
-    right: 30px;
-    width: 20px;
-    height: 20px;
+    top: -8px;
+    right: 38px;
+    width: 15px;
+    height: 15px;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgb(128, 127, 127);
+    background-color: rgb(203, 203, 203);
     color: rgb(0, 0, 0);
     border-radius: 50%; /* Circular background */
     font-size: 15px;
@@ -60,8 +60,8 @@
 
 /* Favicon box */
 .favicon-box {
-    width: 30px; /* Set width for the favicon */
-    height: 30px;
+    width: 40px; /* Set width for the favicon */
+    height: 40px;
     object-fit: cover;
 }
 
@@ -83,5 +83,8 @@
     background: rgba(0, 0, 0, 0.5); /* Semi-transparent dark background */
     z-index: 1000;
 }
+
+
+
 
 
