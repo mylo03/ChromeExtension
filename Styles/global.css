@@ -16,7 +16,7 @@ body {
 .container {
     width: 300px;
     height: 400px;
-    background-color: #fff;
+    background-color: #f5f5f4;
     border-radius: 10px;
     padding: 20px;
     display: flex;
@@ -31,7 +31,7 @@ body {
 .header-container {
     width: 100px;
     height: 400px;
-    background-color: rgb(165, 199, 255);
+    background: linear-gradient(to bottom, rgb(37, 117, 176), rgb(135, 206, 235));
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -124,8 +124,8 @@ ul {
     margin-top: 10px;
     position: relative;
     display: inline-block;
-    width: 150px;
-    height: 150px;
+    width: 100px;
+    height: 100px;
     border-radius: 15px; /* This will give it rounded corners */
     background-color: #f0f0f0;
     overflow: hidden;
@@ -142,3 +142,8 @@ ul {
     justify-content: center;
     align-items: center;
 }
+
+
+
+
+

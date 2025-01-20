@@ -94,6 +94,26 @@
 }
 
 .general-keyword::before {
-    content: "🌍";  /* Adds the coding emoji before each tag */
+    content: "🌍";  /* Adds the general emoji before each tag */
     margin-right: 8px;  /* Adds space between the emoji and the text */
+}
+
+.finance-keyword::before {
+    content: "💵";  /* Adds the finance emoji before each tag */
+    margin-right: 8px;  /* Adds space between the emoji and the text */
+}
+
+.finance-keyword {
+    background-color: #2ecc40; /* Green for finance keywords */
+    color: #2c3e50; /* Dark text */
+}
+
+.quant-keyword::before {
+    content: "📊";  /* Adds the chart emoji before each tag */
+    margin-right: 8px;  /* Adds space between the emoji and the text */
+}
+
+.quant-keyword {
+    background-color: #e74c3c; /* Red for quantitative keywords */
+    color: #fff; /* White text for better contrast */
 }

@@ -1,5 +1,6 @@
 import { searchJobsTags } from './jobKeywords.js';
 
+
 export const openInternshipDetails = (itemData) => {
     // Create a semi-transparent overlay
     const overlay = document.createElement('div');
@@ -45,9 +46,12 @@ export const openInternshipDetails = (itemData) => {
     TagContainer.id = "saved-tags-job";  
     TagContainer.classList.add('saved-tags-job');
 
+
     // Get the tags that are found and missing
-    const keywordResults = ['React', 'Java', 'Marketing', 'Sales'];
-    const { foundTags, missingTags } = searchJobsTags(savedPageText, keywordResults);
+    const storedKeywords = localStorage.getItem('allKeywordResults');
+    const keywordResultsArray = storedKeywords ? JSON.parse(storedKeywords) : [];
+    const { foundTags, missingTags } = searchJobsTags(savedPageText, keywordResultsArray);
+
 
     // Function to create the tag elements
     const createTagElement = (tag, isFound) => {
@@ -56,13 +60,13 @@ export const openInternshipDetails = (itemData) => {
 
         // Set the styles based on whether the tag is found or missing
         if (isFound) {
-            tagElement.style.color = 'green';
+            tagElement.style.color = 'black';
             tagElement.style.backgroundColor = '#f9f9f9'; // Optional: Background color for tags
             tagElement.style.borderRadius = '15px';
             tagElement.style.padding = '5px 10px';
             tagElement.style.marginRight = '10px';
         } else {
-            tagElement.style.color = 'red';
+            tagElement.style.color = 'black';
             tagElement.style.backgroundColor = '#f9f9f9'; // Optional: Background color for missing tags
             tagElement.style.borderRadius = '15px';
             tagElement.style.padding = '5px 10px';
@@ -77,18 +81,12 @@ export const openInternshipDetails = (itemData) => {
     lookingForSection.style.marginBottom = '10px';
     lookingForSection.style.marginLeft = '0px';
     lookingForSection.style.textAlign = 'left'; 
-    TagContainer.appendChild(lookingForSection);
 
     // Display the found tags first (with tick emojis)
     const foundTagsContainer = document.createElement('div');
     foundTagsContainer.style.display = 'flex';
     foundTagsContainer.style.flexWrap = 'nowrap'; // Keep tags in a single row
     foundTagsContainer.style.overflowX = 'auto'; // Enable horizontal scrolling if needed
-    
-    const tickEmoji = document.createElement('span');
-    tickEmoji.textContent = '✔️'; // Tick emoji
-    tickEmoji.style.marginRight = '10px'; // Add some spacing after the tick emoji
-    foundTagsContainer.appendChild(tickEmoji);
 
     foundTags.coding.forEach(tag => {
         const tagElement = createTagElement(tag, true);
@@ -112,11 +110,6 @@ export const openInternshipDetails = (itemData) => {
     missingTagsContainer.style.flexWrap = 'nowrap'; // Keep missing tags in a single row (horizontal scrolling)
     missingTagsContainer.style.overflowX = 'auto'; // Enable horizontal scrolling for missing tags
     
-    const crossEmoji = document.createElement('span');
-    crossEmoji.textContent = '?'; // Question Mark emoji
-    crossEmoji.style.marginRight = '10px'; // Add some spacing after the tick emoji
-    missingTagsContainer.appendChild(crossEmoji);
-    
     
     missingTags.coding.forEach(tag => {
         const tagElement = createTagElement(tag, false);
@@ -138,15 +131,35 @@ export const openInternshipDetails = (itemData) => {
     TagContainer.style.overflowY = 'auto';  // Enable vertical scrolling if content overflows
     TagContainer.style.whiteSpace = 'normal'; // Allow tags to wrap onto multiple lines
     TagContainer.style.boxSizing = 'border-box';  // Ensure padding doesn't affect maxHeight
-    TagContainer.style.margin = '0px'; 
+    TagContainer.style.marginLeft = '20px'; 
     TagContainer.style.padding = '0px'; 
 
+    const tickElement = document.createElement('div');
+    tickElement.textContent = '✅';
+    tickElement.style.position = 'absolute'; // Use absolute positioning
+    tickElement.style.top = '228px';         // Adjust as needed
+    tickElement.style.left = '20px';       // Adjust as needed
+    tickElement.style.fontSize = '14px';    // Optional: style the tick
+    tickElement.style.color = 'green'; 
+
+
+    const crossElement = document.createElement('div');
+    crossElement.textContent = '❓';
+    crossElement.style.position = 'absolute'; // Use absolute positioning
+    crossElement.style.top = '255px';         // Adjust as needed
+    crossElement.style.left = '20px';       // Adjust as needed
+    crossElement.style.fontSize = '14px';    // Optional: style the tick
+    crossElement.style.color = 'red'; 
+
     // Update the detailsContainer with the new structure
+    detailsContainer.insertBefore(tickElement, detailsContainer.firstChild); 
+    detailsContainer.insertBefore(crossElement, detailsContainer.firstChild); 
     detailsContainer.appendChild(dateRow);
     detailsContainer.appendChild(linkRow);
     detailsContainer.appendChild(separator);
     detailsContainer.appendChild(notesTextarea);
     detailsContainer.appendChild(border);  // Border added between tags and notes section
+    detailsContainer.appendChild(lookingForSection); 
     detailsContainer.appendChild(TagContainer);
 
     // Append the details container to the overlay

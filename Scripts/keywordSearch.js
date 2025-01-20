@@ -1,10 +1,14 @@
 import { codingKeywords } from '../assets/coding-keywords.js';
 import { generalKeywords } from '../assets/general-keywords.js';
+import { financeKeywords } from '../assets/finance-keywords.js';  
+import { quantKeywords } from '../assets/quant-keywords.js';  // Importing quant-related keywords
 
 export function searchKeywordsInText(textContent, targetElement) {
     const foundKeywords = {
         coding: [],
-        general: []
+        general: [],
+        finance: [],  // Finance category
+        quant: []  // Quantitative category
     };
 
     // Search in coding keywords
@@ -20,6 +24,22 @@ export function searchKeywordsInText(textContent, targetElement) {
         const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
         if (textContent.match(regex)) {
             foundKeywords.general.push(keyword);
+        }
+    });
+
+    // Search in finance keywords
+    financeKeywords.forEach((keyword) => {
+        const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
+        if (textContent.match(regex)) {
+            foundKeywords.finance.push(keyword);  // Add to finance category
+        }
+    });
+
+    // Search in quant keywords
+    quantKeywords.forEach((keyword) => {
+        const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
+        if (textContent.match(regex)) {
+            foundKeywords.quant.push(keyword);  // Add to quant category
         }
     });
 
@@ -40,8 +60,22 @@ export function searchKeywordsInText(textContent, targetElement) {
         });
     }
 
+    // Display finance keywords with another color
+    if (foundKeywords.finance.length > 0) {
+        foundKeywords.finance.forEach((keyword) => {
+            targetElement.innerHTML += `<span class="keyword-tag finance-keyword">${keyword}</span>`;
+        });
+    }
+
+    // Display quant keywords with another color
+    if (foundKeywords.quant.length > 0) {
+        foundKeywords.quant.forEach((keyword) => {
+            targetElement.innerHTML += `<span class="keyword-tag quant-keyword">${keyword}</span>`;
+        });
+    }
+
     // If no keywords found
-    if (foundKeywords.coding.length === 0 && foundKeywords.general.length === 0) {
+    if (foundKeywords.coding.length === 0 && foundKeywords.general.length === 0 && foundKeywords.finance.length === 0 && foundKeywords.quant.length === 0) {
         targetElement.innerHTML = `<h3>No Keywords Found</h3>`;
     }
 

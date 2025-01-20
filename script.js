@@ -581,7 +581,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (currentHour >= 18 && currentHour < 23) {
         greetingElement.textContent = 'Good evening!';
     } else {
-        greetingElement.textContent = 'Late-night hustle, I see!';
+        greetingElement.textContent = 'Late-night hustle!';
     }
 
 
@@ -614,6 +614,28 @@ document.addEventListener('DOMContentLoaded', () => {
             reader.readAsDataURL(files[0]);
         }
     });
+
+
+
+
+
+    // Collapsable
+    //const header = document.querySelector('header');
+    //const toggleButton = document.getElementById('toggle-button');
+
+    //toggleButton.addEventListener('click', () => {
+     //   if (header.classList.contains('collapsed')) {
+            // Expand the header
+    //        header.classList.remove('collapsed');
+    //        header.classList.add('expanded');
+     //       toggleButton.textContent = '<'; // Change to collapse symbol
+       // } else {
+            // Collapse the header
+         //   header.classList.remove('expanded');
+           // header.classList.add('collapsed');
+        //    toggleButton.textContent = '>'; // Change to expand symbol
+       // }
+    //});
 
 
 

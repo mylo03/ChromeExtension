@@ -13,7 +13,7 @@ body.dark-mode {
 }
 
 .header-container.dark-mode {
-    background-color: #24243a;
+    background: linear-gradient(to bottom, #2a2a44, #141527); /* Dark mode gradient */
 }
 
 
@@ -22,8 +22,6 @@ body.dark-mode {
     background-color: #43435e; /* Dark background */
     color: white; /* Light text */
 }
-
-
 
 
 
@@ -96,7 +94,7 @@ label:active:after {
 
 
 body.dark-mode nav button {
-    background-color: #24243a; /* Dark background */
+    background-color: transparent; /* Dark background */
     color: #ebebeb; /* Light text color */
     border: none;
 }

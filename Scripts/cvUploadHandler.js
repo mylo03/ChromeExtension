@@ -118,6 +118,20 @@ export function initializeCVUploadHandlers() {
         // Save text content and search for keywords
         localStorage.setItem('pdfText', textContent);
         searchKeywordsInText(textContent, keywordResults); // Pass keywordResults here
+
+
+
+        function extractKeywords(targetElement) {
+            // Get all keyword tags in the target element
+            const keywordTags = targetElement.querySelectorAll('.keyword-tag');
+            
+            // Extract the text content of each tag and return as an array
+            return Array.from(keywordTags).map(tag => tag.textContent.trim());
+        }
+
+        const allKeywordResults = extractKeywords(keywordResults); 
+        localStorage.setItem('allKeywordResults', JSON.stringify(allKeywordResults));
+
     
         // Immediately update the display after saving the text
         displaySavedImageAndKeywords();  // <-- Added this line to trigger an update
